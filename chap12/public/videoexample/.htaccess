@@ -1,0 +1,11 @@
+# audio
+AddType audio/ogg oga ogg
+
+# video
+AddType video/ogg ogv
+
+AddType video/webm webm
+
+AddType video/mp4 m4v mp4
+
+AddType audio/mp4 m4a

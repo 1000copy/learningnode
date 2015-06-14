@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<head>
+   <title>Big Buck Bunny with Custom Controls</title>
+   <meta charset="utf-8" />
+   <style>
+
+      video
+         {
+         /* basic border */
+         border: 1px solid #ccc;
+         padding: 20px;
+         margin: 10px;
+         border-radius: 20px;
+         }
+
+      /* gradients and color backgrounds */
+      video, #start, #stop, #pause
+         {
+         /* add regular background */
+         background-color: #ffcccc;
+
+         /* add gradient background */
+         background-image: linear-gradient(top, #fff, #fcc);
+         background-image: -moz-linear-gradient(top, #fff, #fcc);
+         background-image: -webkit-linear-gradient(top, #fff, #fcc);
+         background-image: -o-linear-gradient(top, #fff, #fcc);
+         background-image: -ms-linear-gradient(top, #fff, #fcc);
+         }
+
+      /* shadows */
+      video, #start, #stop, #pause
+         {
+         -webkit-box-shadow: 0 0 10px #ccc;
+         box-shadow: 0 0 10px #ccc;
+         }
+
+      #controls
+         {
+         display: none;
+         margin: 5px 30px;
+         }
+
+      #start, #stop, #pause
+         {
+         border: 1px solid #ccc;
+         padding: 5px;
+         border-radius: 10px;
+         }
+
+      body
+         {
+         /* set up transition */
+         -webkit-transition: background-color 1s ease-in-out;
+         -moz-transition: background-color 1s ease-in-out;
+         -o-transition: background-color 1s ease-in-out;
+         -ms-transition: background-color 1s ease-in-out;
+         transition: background-color 1s ease-in-out;
+
+         background-color: #fff;
+         }
+
+      #butterfly
+         {
+         position: absolute;
+         left: 0;
+         top: -6px;
+         background-image: url(butterfly.png);
+         width: 30px;
+         height: 31px;
+         }
+      #progressbar
+         {
+
+         display: none;
+
+         /* progress bar width and height */
+         width: 500px;
+         height: 20px;
+
+         /* position and border */
+         position: relative;
+         border: 1px solid #ccc;
+         margin: 10px;
+         border-radius: 20px;
+
+         /* add regular background */
+         background-color: #cccccc;
+
+         /* add gradient background */
+         background-image: linear-gradient(top, #fff, #ccc);
+         background-image: -moz-linear-gradient(top, #fff, #ccc);
+         background-image: -webkit-linear-gradient(top, #fff, #fcc);
+         background-image: -o-linear-gradient(top, #fff, #ccc);
+         background-image: -ms-linear-gradient(top, #fff, #ccc);
+
+         /* box shadow */
+         -webkit-box-shadow: 0 0 10px #ccc;
+         box-shadow: 0 0 10px #ccc;
+         }
+
+      #loadingprogress
+         {
+         /* border */
+         border-radius: 20px;
+
+         /* beginning height and width */
+         height: 20px;
+         width: 0;
+
+         /* background */
+         background-color: #9acd32;
+         background-image: linear-gradient(top, #ffffff, #9acd32);
+         background-image: -moz-linear-gradient(top, #ffffff, #9acd32);
+         background-image: -webkit-linear-gradient(top, #ffffff, #9acd32);
+         background-image: -o-linear-gradient(top, #ffffff, #9acd32);
+         background-image: -ms-linear-gradient(top, #ffffff, #9acd32);
+         }
+
+
+   </style>
+
+   <script>
+      
+      document.addEventListener("DOMContentLoaded", setupControl, false);
+
+      function setupControl() { 
+
+         // setup for video playback
+         var bbVideo = document.getElementById("videoobj");
+         if (bbVideo.canPlayType) {
+
+            // remove controls
+            bbVideo.removeAttribute("controls");
+
+            // display controls and progress bar
+            document.getElementById("controls").style.display="block";
+            document.getElementById("progressbar").style.display="block";
+
+            // events for video
+            bbVideo.addEventListener("timeupdate", reportProgress, false);
+            bbVideo.addEventListener("progress", showProgress, false);
+            bbVideo.addEventListener("ended", endPlayback, false);
+
+            // set buttons based on playback
+            bbVideo.addEventListener("play",function() {
+               document.getElementById("start").disabled=true;
+               document.getElementById("pause").disabled=false;
+               document.getElementById("stop").disabled=false;
+               }, false);
+
+            bbVideo.addEventListener("pause", function() {
+               document.getElementById("start").disabled=false;
+               document.getElementById("pause").disabled=true;
+               }, false);
+
+
+            // events for buttons
+            document.getElementById("start").addEventListener(
+                            "click",startPlayback,false);
+            document.getElementById("stop").addEventListener(
+                            "click",stopPlayback,false);
+            document.getElementById("pause").addEventListener(
+                            "click",pausePlayback,false);
+
+           // progress bar event
+           var prog = document.getElementById("progressbar");
+           prog.addEventListener("click",seekPlayback,false);
+
+        }
+      }
+
+      // start video, enable stop and pause
+      // disable play
+      function startPlayback() {
+         document.getElementsByTagName("body")[0].style.backgroundColor="#664c58";
+         document.getElementById("videoobj").play();
+      }
+
+      // pause video, enable start, disable stop
+      // disable pause
+      function pausePlayback() {
+         document.getElementById("videoobj").pause();
+      }
+
+      // pause video, reset to currentTime of zero
+      // call function to clean up
+      function stopPlayback() {
+         // reset video
+         var bbVideo = document.getElementById("videoobj");
+         bbVideo.pause();
+         bbVideo.currentTime=0;
+         endPlayback();
+      }
+
+      // enable play, disable pause and stop
+      // reset playback indicator, bring up house lights
+      function endPlayback() {
+
+         // bring up the house lights
+         document.getElementsByTagName("body")[0].
+                               style.backgroundColor="#fff";
+
+         // reset progress bar
+         var progress = document.getElementById("butterfly");
+         progress.style.left="-10px";
+
+         // reset controls
+         document.getElementById("start").disabled=false;
+         document.getElementById("pause").disabled=true;
+         document.getElementById("stop").disabled=true;
+      }
+
+      // display progress of movie loading
+      function showProgress() {
+         // quit if no time ranges
+         if (this.buffered.length == 0) return;
+
+         var barwidth = 500;
+
+         // since there's now the possibility of multi time ranges
+         var end = 0;
+         for (var i = 0; i < this.buffered.length; i++) {
+           end += (this.buffered.end(i) - this.buffered.start(i));
+         }
+
+         // find percentage of playback to duration
+         var pct = end / this.duration;
+         var bar = document.getElementById("loadingprogress");
+
+         // adjust the progress
+         var width = (barwidth * pct);
+         document.getElementById("loadingprogress").style.width=width + "px";
+      }
+
+
+      // reset film play marker
+      function reportProgress() {
+         var barwidth = 500;
+         var sliderwidth = 30;
+
+         // pct of playback * width
+         var time = Math.round(this.currentTime);
+         var duration = parseInt(this.duration);
+         var position = barwidth * (time / duration);
+         if (isNaN(position)) return;
+
+         // position butterfly
+         var butterfly = document.getElementById("butterfly");
+         if (position <= (barwidth - Math.round(sliderwidth / 2))) {
+            butterfly.style.left=position + "px";
+         } else {
+            butterfly.style.left=barwidth - Math.round(sliderwidth / 2);
+         }
+      }
+
+      // seekPlayback
+      function seekPlayback(e) {
+         var barwidth = 500;
+
+         // find click position
+         var x = e.pageX - this.offsetLeft;
+
+         // translate to video position
+         var pct = x / barwidth;
+         var bbVideo = document.getElementById("videoobj");
+
+         // now position playback
+         var newPos = Math.round(bbVideo.duration * pct);
+         bbVideo.currentTime = newPos;
+      }
+
+   </script>
+</head>
+<body>
+   <div id="container">
+      <video id="videoobj" width="480" height="270"
+                preload="none" poster="bigbuckposter.jpg" controls>
+         <source src="videofile.mp4" type="video/mp4"/>
+         <source src="videofile.webm" type="video/ogg" />
+      </video>
+      <div id="controls">
+         <button id="start">Play</button>
+         <button id="stop" disabled>Stop</button>
+         <button id="pause" disabled>Pause</button>
+      </div>
+     <div id="progressbar">
+        <div id="loadingprogress"></div>
+        <div id="butterfly"></div>
+     </div>
+  </div>
+</body>

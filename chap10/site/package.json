@@ -1,0 +1,19 @@
+{
+  "name": "Widget Factory",
+  "preferGlobal": "false",
+  "version": "1.0.0",
+  "author": "Shelley Powers <shelley.just@gmail.com> (http://burningbird.net)",
+  "description": "World's best Widget Factory",
+
+  "dependencies": {
+    "express": "3.0.0alpha1-pre"",
+    "jade": "*",
+    "stylus": "*",
+    "redis": "*",
+    "mongoose": "*",
+  },
+
+  "devDependencies": {
+    "nodeunit": "*"
+  }
+}    

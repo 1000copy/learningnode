@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title 
+
+  h2 Visitor IP Addresses
+  ul
+    for ip in ips
+      li=ip
+ 
+  table
+    caption Page Visits
+    each val, key in urls
+      tr
+        td #{key}
+        td #{val}
