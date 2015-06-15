@@ -36,6 +36,7 @@ function hackhtml(text){
     });
     $('.item-show div.date').each(function (idx, element) {
            d = (element.children[0].data.trim()) 
+           // 让往事随风而逝    2015-02-14 有个span，故而date取不出来。
            d = element.text()
            items.push({date:d})
     })
