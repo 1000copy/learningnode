@@ -1,63 +1,8 @@
 var cheerio = require('cheerio');
 var superagent = require('superagent');
 
-function hackhtml(text){
-  var $ = cheerio.load(text);
-    var items = [];
-    $('#topic_list .topic_title').each(function (idx, element) {
-      var $element = $(element);
-      items.push({
-        title: $element.attr('title'),
-        href: $element.attr('href')
-      });
-    });
-    return items
-}
 
-function hackhtml(text){
-  var $ = cheerio.load(text);
-    var items = [];
-    $('.title a').each(function (idx, element) {
-      var $element = $(element);
-      items.push({
-        title: $element.text().trim(),
-        href: $element.attr('href')
-      });
-    });
-    return items
-}
 
-function gettitle(element){
-  return element.firstChild.firstChild.text();  
-}
-
-function hackhtml(text){
-  var $ = cheerio.load(text);
-    var items = [];
-    $('.item-show').each(function (idx, element) {
-      if (idx ==1){
-        var $element = $(element);
-        // console.log(element.children)
-        for(var i=0;i<element.children.length;i++){
-          var c =  element.children[i]
-          if (c.type =='tag' && c.name =='div' && c.attribs.class == 'title')
-          for(var j=0;j< c.children.length;j++){
-            var d = c.children[j]
-            if (d.type =='tag' && d.name =='a' ){
-              console.log(d.children[0].data)            
-              console.log(d.attribs.href)
-          }
-            // console.log(d)
-          }
-          // items.push({
-          //   title: c.children[0].name
-          //   // href: $element.attr('href')
-          // });       
-        }
-      }
-    });
-    return items
-}
 
 function hackhtml(text){
   var $ = cheerio.load(text);
@@ -123,11 +68,3 @@ superagent.get(url)
     console.log (hackhtml(sres.text))    
   });
 
-
-// superagent.get('https://cnodejs.org/')
-//   .end(function (err, sres) {
-//     if (err) {
-//       return next(err);
-//     }
-//     console.log (hackhtml(sres.text))    
-//   });
