@@ -72,12 +72,7 @@ function fetch(start){
       if (err) {
         return next(err);
       }
-      console.log("-")
-      if (book_count ==undefined){
-        book_count = fetch_count(text)      
-        if (book_count ==undefined)
-          book_count = 0 
-      }
+      console.log("-")      
       savehtml(sres.text)            
     });
   function savehtml(text){
@@ -93,8 +88,8 @@ function fetch(start){
 }
 function fetch_get_count(){
   // url = "http://book.douban.com/people/1830596/collect?sort=time&filter=all&mode=list&tags_sort=count&start="
-  url = "http://book.douban.com/people/1830596/collect?start=0&sort=time&rating=all&filter=all&mode=list"
-  // url += 100000
+  url = "http://book.douban.com/people/1830596/collect?sort=time&filter=all&mode=list&tags_sort=count&start="
+  url += 0
   var book_count = 0
   superagent.get(url)
     .end(function (err, sres) {
@@ -145,5 +140,7 @@ function get_count(title){
   var r = new RegExp(/\(.*\)/)
   return +title.match(r)[0].slice(1,-1)
 }
-r()
+// r()
+fetch(0)
 
+// fetch_get_count()
