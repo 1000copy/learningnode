@@ -23,11 +23,22 @@ function hackhtml(text){
     return items
 }
 
+function joinData(element){
+  var r  =''
+  for(var i=0;i<element.children.length;i++){
+    var c =  element.children[i]
+    if (c.type =='text' ){      
+        r += c.data
+    }    
+  }
+  return r;  
+}
+
 function hackhtml(text){
   var $ = cheerio.load(text);
     var items = [];
-    $('.item-show div.title a').each(function (idx, element) {      
-        var $element = $(element);
+    $('.item-show div.title a').each(function (idx, element) {     
+         var $element = $(element);
         var title,href,d
         href = (element.attribs.href) 
         title =  (element.children[0].data.trim())   
@@ -35,16 +46,21 @@ function hackhtml(text){
         items.push({title:title})             
     });
     $('.item-show div.date').each(function (idx, element) {
+        // if (idx ==2 || idx ==1 ){
+        if (true){
            d = (element.children[0].data.trim()) 
-           // 让往事随风而逝    2015-02-14 有个span，故而date取不出来。
-           d = element.text()
+           // console.log(element)
+           if (d == "" ){
+             d = joinData(element).trim()
+           }
            items.push({date:d})
+         }
     })
     return items
 }
 
 var fs = require('fs')
-  , filename = "douban.readed.html"
+  , filename = "douban.readed1.html"
 fs.readFile(filename, 'utf8', function(err, data) {
   if (err) throw err;
   console.log('OK: ' + filename);
