@@ -60,7 +60,7 @@ function run(){
     console.log(a)
   });
 }
-var book_count = undefined
+
 
 function fetch(start){
   url = "http://book.douban.com/people/1830596/collect?sort=time&filter=all&mode=list&tags_sort=count&start="
@@ -68,11 +68,16 @@ function fetch(start){
 
   superagent.get(url)
     .end(function (err, sres) {
+      console.log("*")
       if (err) {
         return next(err);
       }
-      if (book_count ==undefined)
-        book_count = fetch_count(text)
+      console.log("-")
+      if (book_count ==undefined){
+        book_count = fetch_count(text)      
+        if (book_count ==undefined)
+          book_count = 0 
+      }
       savehtml(sres.text)            
     });
   function savehtml(text){
@@ -86,10 +91,29 @@ function fetch(start){
     }); 
   }
 }
+function fetch_get_count(){
+  // url = "http://book.douban.com/people/1830596/collect?sort=time&filter=all&mode=list&tags_sort=count&start="
+  url = "http://book.douban.com/people/1830596/collect?start=0&sort=time&rating=all&filter=all&mode=list"
+  // url += 100000
+  var book_count = 0
+  superagent.get(url)
+    .end(function (err, sres) {
+      console.log("*")
+      if (err) {
+        return next(err);
+      }
+      console.log(sres.text)
+      book_count = fetch_count(sres.text)      
+        return book_count
+      })    
+}
 function r(){
   var i = 0 
-  while (i*30 <book_count)    
+  var book_count = fetch_get_count()
+  while ( i*30 <book_count){    
+    console.log(i)
       fetch(30*i++)
+    }
 }
 // r()
 function run1(){
@@ -117,6 +141,7 @@ function fetch_count(text){
 }
 // console.log(get_count("1000copy读过的书(162)")) ---> 162
 function get_count(title){
+  console.log("title"+title)
   var r = new RegExp(/\(.*\)/)
   return +title.match(r)[0].slice(1,-1)
 }
