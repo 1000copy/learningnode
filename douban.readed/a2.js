@@ -49,7 +49,6 @@ function hackhtml(text){
         // if (idx ==2 || idx ==1 ){
         if (true){
            d = (element.children[0].data.trim()) 
-           // console.log(element)
            if (d == "" ){
              d = joinData(element).trim()
            }
