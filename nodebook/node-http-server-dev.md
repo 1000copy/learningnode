@@ -194,223 +194,117 @@ http 模块来的url，形如 http://domain.com:80/start?foo=bar&baz=bzz。可�
 ### 路由
 
 有了路由，来自/start和/upload的请求会导流到不同函数。所以，我们应该有一个结构，map两者的关系
+
   var m = [
-    {path:"/",func:foo},
-    {path:"/start",func:bar},
-    {path:"/upload",func:baz}
+    {path:"/",func:function (){return "/"}},
+    {path:"/start",func:function (){return "/start"}},
+    {path:"/upload",func:function (){return "/upload"}}
   ]
 
 
 首先，加入路由函数：
 
-    var http = require("http");
-    http.createServer(function(request, response) {
-      var pathname = url.parse(request.url).pathname;
-      route(pathname)(request,response);
-      response.end("<b>it works</b><a href='/start'>start</a>");
-    }).listen(80);
-    function route(pathname){
-      for(var i=0;i<m.length;i++)
-        if (m.path == pathname)
-          return m.func
-      return null
+
+  var http = require("http");
+  http.createServer(function(request, response) {
+    var pathname = require("url").parse(request.url).pathname;
+    var r = route(pathname)
+    if (r)
+       response.end(r());
+    else
+       response.end("<b>it works</b>");
+  }).listen(80);
+  function route(pathname){
+    for(var i=0;i<m.length;i++){
+      if (m[i].path == pathname)
+        return m[i].func
     }
-    function foo(request, response){console.log("foo")}
-    function bar(request, response){console.log("bar")}
-    function baz(request, response){console.log("baz")}
-
-
-我们先将这个对象引入到主文件index.js中：
-
-var server = require("./server");
-var router = require("./router");
-var requestHandlers = require("./requestHandlers");
-
-var handle = {}
-handle["/"] = requestHandlers.start;
-handle["/start"] = requestHandlers.start;
-handle["/upload"] = requestHandlers.upload;
-
-server.start(router.route, handle);
-虽然handle并不仅仅是一个“东西”（一些请求处理程序的集合），我还是建议以一个动词作为其命名，这样做可以让我们在路由中使用更流畅的表达式，稍后会有说明。
-
-正如所见，将不同的URL映射到相同的请求处理程序上是很容易的：只要在对象中添加一个键为"/"的属性，对应requestHandlers.start即可，这样我们就可以干净简洁地配置/start和/的请求都交由start这一处理程序处理。
-
-在完成了对象的定义后，我们把它作为额外的参数传递给服务器，为此将server.js修改如下：
-
-var http = require("http");
-var url = require("url");
-
-function start(route, handle) {
-  function onRequest(request, response) {
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-
-    route(handle, pathname);
-
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.write("Hello World");
-    response.end();
+    return null
   }
 
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
-}
+我们故伎重演，用curl解放眼球：
 
-exports.start = start;
-这样我们就在start()函数里添加了handle参数，并且把handle对象作为第一个参数传递给了route()回调函数。
 
-然后我们相应地在route.js文件中修改route()函数：
+    $ curl localhost/upload
+    upload
+    $ curl localhost/start
+    start
+    $ curl localhost/
+    /
 
-function route(handle, pathname) {
-  console.log("About to route a request for " + pathname);
-  if (typeof handle[pathname] === 'function') {
-    handle[pathname]();
-  } else {
-    console.log("No request handler found for " + pathname);
-  }
-}
+##等效变幻
 
-exports.route = route;
-通过以上代码，我们首先检查给定的路径对应的请求处理程序是否存在，如果存在的话直接调用相应的函数。我们可以用从关联数组中获取元素一样的方式从传递的对象中获取请求处理函数，因此就有了简洁流畅的形如handle[pathname]();的表达式，这个感觉就像在前方中提到的那样：“嗨，请帮我处理了这个路径”。
+  数学上，有时候仅仅是改变下公式内元素的位置，就可以让解析或者证明变得更加容易。代码也是。我们把上面的m 映射改成：
 
-有了这些，我们就把服务器、路由和请求处理程序在一起了。现在我们启动应用程序并在浏览器中访问http://localhost:8888/start，以下日志可以说明系统调用了正确的请求处理程序：
+  var m ={}
+  m["/"] = function (){return "/"}
+  m["/start"] = function (){return "/start"}
+  m["/upload"] = function (){return "/upload"}
 
-Server has started.
-Request for /start received.
-About to route a request for /start
-Request handler 'start' was called.
-并且在浏览器中打开http://localhost:8888/可以看到这个请求同样被start请求处理程序处理了：
+  表达的内容是等效的 。但是对于解析函数route会更加简单。
 
-Request for / received.
-About to route a request for /
-Request handler 'start' was called.
-让请求处理程序作出响应
-
-很好。不过现在要是请求处理程序能够向浏览器返回一些有意义的信息而并非全是“Hello World”，那就更好了。
-
-这里要记住的是，浏览器发出请求后获得并显示的“Hello World”信息仍是来自于我们server.js文件中的onRequest函数。
-
-其实“处理请求”说白了就是“对请求作出响应”，因此，我们需要让请求处理程序能够像onRequest函数那样可以和浏览器进行“对话”。
-
-不好的实现方式
-
-对于我们这样拥有PHP或者Ruby技术背景的开发者来说，最直截了当的实现方式事实上并不是非常靠谱： 看似有效，实则未必如此。
-
-这里我指的“直截了当的实现方式”意思是：让请求处理程序通过onRequest函数直接返回（return()）他们要展示给用户的信息。
-
-我们先就这样去实现，然后再来看为什么这不是一种很好的实现方式。
-
-让我们从让请求处理程序返回需要在浏览器中显示的信息开始。我们需要将requestHandler.js修改为如下形式：
-
-function start() {
-  console.log("Request handler 'start' was called.");
-  return "Hello Start";
-}
-
-function upload() {
-  console.log("Request handler 'upload' was called.");
-  return "Hello Upload";
-}
-
-exports.start = start;
-exports.upload = upload;
-好的。同样的，请求路由需要将请求处理程序返回给它的信息返回给服务器。因此，我们需要将router.js修改为如下形式：
-
-function route(handle, pathname) {
-  console.log("About to route a request for " + pathname);
-  if (typeof handle[pathname] === 'function') {
-    return handle[pathname]();
-  } else {
-    console.log("No request handler found for " + pathname);
-    return "404 Not found";
-  }
-}
-
-exports.route = route;
-正如上述代码所示，当请求无法路由的时候，我们也返回了一些相关的错误信息。
-
-最后，我们需要对我们的server.js进行重构以使得它能够将请求处理程序通过请求路由返回的内容响应给浏览器，如下所示：
-
-var http = require("http");
-var url = require("url");
-
-function start(route, handle) {
-  function onRequest(request, response) {
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    var content = route(handle, pathname)
-    response.write(content);
-    response.end();
+  function route(pathname){
+    return m[pathname]
   }
 
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
-}
+目前我们什么都混在一起。服务器的启动，回调，路由的解析，路由的处理。要想显得干净利索，分工合理，自然有些办法。比如按照职责，做模块划分。不过这是模块化的任务，会专文描述。如今的代码还不多，放在一起，也有利于把握整体。
 
-exports.start = start;
-如果我们运行重构后的应用，一切都会工作的很好：请求http://localhost:8888/start,浏览器会输出“Hello Start”，请求http://localhost:8888/upload会输出“Hello Upload”,而请求http://localhost:8888/foo 会输出“404 Not found”。
+## 服务器特定问题：阻塞
 
-好，那么问题在哪里呢？简单的说就是： 当未来有请求处理程序需要进行非阻塞的操作的时候，我们的应用就“挂”了。
+客户端总要考虑客户的使用友好，不要卡死，界面漂亮；而服务器需要处理的就是减少阻塞。
 
-没理解？没关系，下面就来详细解释下。
+何为阻塞？
 
-阻塞与非阻塞
+让代码慢下来，就可以看到阻塞。我们来让start（）睡一会，模拟下。
 
-正如此前所提到的，当在请求处理程序中包括非阻塞操作时就会出问题。但是，在说这之前，我们先来看看什么是阻塞操作。
+    function sleep(milliSeconds) {
+      var startTime = new Date().getTime();
+      while (new Date().getTime() < startTime + milliSeconds);
+    }
+    function start() {
+      sleep(5000);
+      return "/start";
+    }
 
-我不想去解释“阻塞”和“非阻塞”的具体含义，我们直接来看，当在请求处理程序中加入阻塞操作时会发生什么。
 
-这里，我们来修改下start请求处理程序，我们让它等待10秒以后再返回“Hello Start”。因为，JavaScript中没有类似sleep()这样的操作，所以这里只能够来点小Hack来模拟实现。
+故伎重演。不过稍作变化。因为curl可以帮助统计运行时间，所以我们来利用下：
+  
+  curl  -w %{time_total}\\n localhost:8888/upload
+  /upload 0.002
 
-让我们将requestHandlers.js修改成如下形式：
+很快出结果，0.002，就是2毫秒。
 
-function start() {
-  console.log("Request handler 'start' was called.");
+  $ curl  -w %{time_total}\\n localhost:8888/start
+  start 5.001
 
-  function sleep(milliSeconds) {
-    var startTime = new Date().getTime();
-    while (new Date().getTime() < startTime + milliSeconds);
-  }
+5毫秒。多一点。正如所愿。
 
-  sleep(10000);
-  return "Hello Start";
-}
+一个一个的，很好。如果并发呢。
 
-function upload() {
-  console.log("Request handler 'upload' was called.");
-  return "Hello Upload";
-}
+打开两个命令行窗口。
 
-exports.start = start;
-exports.upload = upload;
-上述代码中，当函数start()被调用的时候，Node.js会先等待10秒，之后才会返回“Hello Start”。当调用upload()的时候，会和此前一样立即返回。
+一个输入curl  -w %{time_total}\\n localhost:8888/upload，但是不执行
+一个输入curl  -w %{time_total}\\n localhost:8888/start，但是不执行
 
-（当然了，这里只是模拟休眠10秒，实际场景中，这样的阻塞操作有很多，比方说一些长时间的计算操作等。）
+然后，一二三，执行第二个，然后执行第一个。快点。
 
-接下来就让我们来看看，我们的改动带来了哪些变化。
+  $ curl  -w \\n%{time_total}\\n localhost:8888/start
+  /start
+  5.013
 
-如往常一样，我们先要重启下服务器。为了看到效果，我们要进行一些相对复杂的操作（跟着我一起做）： 首先，打开两个浏览器窗口或者标签页。在第一个浏览器窗口的地址栏中输入http://localhost:8888/start， 但是先不要打开它！
 
-在第二个浏览器窗口的地址栏中输入http://localhost:8888/upload， 同样的，先不要打开它！
+  $ curl  -w \\n%{time_total}\\n localhost:8888/upload
+  /upload
+  4.353
 
-接下来，做如下操作：在第一个窗口中（“/start”）按下回车，然后快速切换到第二个窗口中（“/upload”）按下回车。
 
-注意，发生了什么： /start URL加载花了10秒，这和我们预期的一样。但是，/upload URL居然也花了10秒，而它在对应的请求处理程序中并没有类似于sleep()这样的操作！
+为什么执行很快的upload，没有任何修改，时间却增加到几乎5ms呢？
 
-这到底是为什么呢？原因就是start()包含了阻塞操作。形象的说就是“它阻塞了所有其他的处理工作”。
+因为upload被start()阻塞了。start()的慢速，阻塞了其他的工作。
 
-这显然是个问题，因为Node一向是这样来标榜自己的：“在node中除了代码，所有一切都是并行执行的”。
+Node是单线程的。它通过事件轮询（event loop）来实现并行操作。如果轮询过来执行的代码时间长，就会无法处理后来的请求。因此，我们需要尽可能快的完成操作，返回控制权给node。就是说，多使用非阻塞操作。真像某个历史上曾经著名的“非抢占多任务”的系统。
 
-这句话的意思是说，Node.js可以在不新增额外线程的情况下，依然可以对任务进行并行处理 —— Node.js是单线程的。它通过事件轮询（event loop）来实现并行操作，对此，我们应该要充分利用这一点 —— 尽可能的避免阻塞操作，取而代之，多使用非阻塞操作。
-
-然而，要用非阻塞操作，我们需要使用回调，通过将函数作为参数传递给其他需要花时间做处理的函数（比方说，休眠10秒，或者查询数据库，又或者是进行大量的计算）。
-
-对于Node.js来说，它是这样处理的：“嘿，probablyExpensiveFunction()（译者注：这里指的就是需要花时间处理的函数），你继续处理你的事情，我（Node.js线程）先不等你了，我继续去处理你后面的代码，请你提供一个callbackFunction()，等你处理完之后我会去调用该回调函数的，谢谢！”
-
-（如果想要了解更多关于事件轮询细节，可以阅读Mixu的博文——理解node.js的事件轮询。）
+---------exec (ls) ------> settimeout 一样可以表达吧。
 
 接下来，我们会介绍一种错误的使用非阻塞操作的方式。
 
