@@ -1,4 +1,4 @@
--#node http server  development
+#node http server  development
 
 也许，你已经高频多次听到了node。毕竟它真的很火。可是你还在犹豫，毕竟，学习一门语言以及库，是一个开坑和被坑的过程。也担心学习后不知道可以做点什么。那么现在完全可以行动了。我试图以此文，引导你做一个http server。
 
@@ -120,9 +120,9 @@ Node上来就高端！用c#什么的，作为程序员，只能是IIS的用户�
 
 ## 从代码到人话
 
-首先召唤神龙。很多时候我们需要基于他人的工作。做http，就需要引用http模块。它是node的内置模块。
+很多时候我们需要基于他人的工作。做http就应该引用http模块。它是node的内置模块。
 
-我们可以这样启动服务器，并侦听8888端口：
+我们可以先看以上代码的主线索,启动服务器，并侦听8888端口：
 
   var http = require("http");
 
@@ -130,9 +130,7 @@ Node上来就高端！用c#什么的，作为程序员，只能是IIS的用户�
   server.listen(8888);
 
 
-正如前节说道的，有趣的地方在于，createServer的参数是...一个函数。又来了。
-
-createServer。创建一个http server,侦听 8888端口。如果有请求到，就调用
+createServer。创建一个http server,侦听 8888端口。如果有请求到，就调用匿名函数：
 
     function(request, response) {
       response.end("42");
@@ -140,138 +138,23 @@ createServer。创建一个http server,侦听 8888端口。如果有请求到，
 
 在此函数内，调用response.end,把内容（42）发送给Browser，end函数本身会宣告内容传递完毕。
 
+### 玩玩http
+
+启动服务后
+  node server.js
+
+可以在chrome内访问 localhost:8888,多开几个标签，都来打开 http://localhost:8888/，可以看到这个server总可以沉着的、稳定而单调的返回42 。多用户访问哦。
+
+更多时候，我会用curl，一个命令行的browser模拟器。
+
+  curl http://localhost:8888/
+  42
+
+实际上，开发node应用，第一次我常常会用chrome访问测试，后来的反复越多，我越会倾向于使用curl。如果我做这样app，我只有关心返回的是不是我期望的42，而不必关心chrome的进度条，菜单，状态栏。。。多好。42 ！最低眼球识别成本。
+
+因此我不爱ide，而爱 sublime text 也基于同样的理由。
 
 
-##事件驱动再讨论
-
-这个问题可不好回答（至少对我来说），不过这是Node.js原生的工作方式。它是事件驱动的，这也是它为什么这么快的原因。
-
-你也许会想花点时间读一下Felix Geisendörfer的大作Understanding node.js，它介绍了一些背景知识。
-
-这一切都归结于“Node.js是事件驱动的”这一事实。好吧，其实我也不是特别确切的了解这句话的意思。不过我会试着解释，为什么它对我们用Node.js写网络应用（Web based application）是有意义的。
-
-当我们使用 http.createServer 方法的时候，我们当然不只是想要一个侦听某个端口的服务器，我们还想要它在服务器收到一个HTTP请求的时候做点什么。
-
-问题是，这是异步的：请求任何时候都可能到达，但是我们的服务器却跑在一个单进程中。
-
-写PHP应用的时候，我们一点也不为此担心：任何时候当有请求进入的时候，网页服务器（通常是Apache）就为这一请求新建一个进程，并且开始从头到尾执行相应的PHP脚本。
-
-那么在我们的Node.js程序中，当一个新的请求到达8888端口的时候，我们怎么控制流程呢？
-
-嗯，这就是Node.js/JavaScript的事件驱动设计能够真正帮上忙的地方了——虽然我们还得学一些新概念才能掌握它。让我们来看看这些概念是怎么应用在我们的服务器代码里的。
-
-我们创建了服务器，并且向创建它的方法传递了一个函数。无论何时我们的服务器收到一个请求，这个函数就会被调用。
-
-我们不知道这件事情什么时候会发生，但是我们现在有了一个处理请求的地方：它就是我们传递过去的那个函数。至于它是被预先定义的函数还是匿名函数，就无关紧要了。
-
-这个就是传说中的 回调 。我们给某个方法传递了一个函数，这个方法在有相应事件发生时调用这个函数来进行 回调 。
-
-至少对我来说，需要一些功夫才能弄懂它。你如果还是不太确定的话就再去读读Felix的博客文章。
-
-让我们再来琢磨琢磨这个新概念。我们怎么证明，在创建完服务器之后，即使没有HTTP请求进来、我们的回调函数也没有被调用的情况下，我们的代码还继续有效呢？我们试试这个：
-
-var http = require("http");
-
-function onRequest(request, response) {
-  console.log("Request received.");
-  response.writeHead(200, {"Content-Type": "text/plain"});
-  response.write("Hello World");
-  response.end();
-}
-
-http.createServer(onRequest).listen(8888);
-
-console.log("Server has started.");
-注意：在 onRequest （我们的回调函数）触发的地方，我用 console.log 输出了一段文本。在HTTP服务器开始工作之后，也输出一段文本。
-
-当我们与往常一样，运行它node server.js时，它会马上在命令行上输出“Server has started.”。当我们向服务器发出请求（在浏览器访问http://localhost:8888/ ），“Request received.”这条消息就会在命令行中出现。
-
-这就是事件驱动的异步服务器端JavaScript和它的回调啦！
-
-（请注意，当我们在服务器访问网页时，我们的服务器可能会输出两次“Request received.”。那是因为大部分服务器都会在你访问 http://localhost:8888 /时尝试读取 http://localhost:8888/favicon.ico )
-
-服务器是如何处理请求的
-
-好的，接下来我们简单分析一下我们服务器代码中剩下的部分，也就是我们的回调函数 onRequest() 的主体部分。
-
-当回调启动，我们的 onRequest() 函数被触发的时候，有两个参数被传入： request 和 response 。
-
-它们是对象，你可以使用它们的方法来处理HTTP请求的细节，并且响应请求（比如向发出请求的浏览器发回一些东西）。
-
-所以我们的代码就是：当收到请求时，使用 response.writeHead() 函数发送一个HTTP状态200和HTTP头的内容类型（content-type），使用 response.write() 函数在HTTP相应主体中发送文本“Hello World"。
-
-最后，我们调用 response.end() 完成响应。
-
-目前来说，我们对请求的细节并不在意，所以我们没有使用 request 对象。
-
-服务端的模块放在哪里
-
-OK，就像我保证过的那样，我们现在可以回到我们如何组织应用这个问题上了。我们现在在 server.js 文件中有一个非常基础的HTTP服务器代码，而且我提到通常我们会有一个叫 index.js 的文件去调用应用的其他模块（比如 server.js 中的HTTP服务器模块）来引导和启动应用。
-
-我们现在就来谈谈怎么把server.js变成一个真正的Node.js模块，使它可以被我们（还没动工）的 index.js 主文件使用。
-
-也许你已经注意到，我们已经在代码中使用了模块了。像这样：
-
-var http = require("http");
-
-...
-
-http.createServer(...);
-Node.js中自带了一个叫做“http”的模块，我们在我们的代码中请求它并把返回值赋给一个本地变量。
-
-这把我们的本地变量变成了一个拥有所有 http 模块所提供的公共方法的对象。
-
-给这种本地变量起一个和模块名称一样的名字是一种惯例，但是你也可以按照自己的喜好来：
-
-var foo = require("http");
-
-...
-
-foo.createServer(...);
-很好，怎么使用Node.js内部模块已经很清楚了。我们怎么创建自己的模块，又怎么使用它呢？
-
-等我们把 server.js 变成一个真正的模块，你就能搞明白了。
-
-事实上，我们不用做太多的修改。把某段代码变成模块意味着我们需要把我们希望提供其功能的部分 导出 到请求这个模块的脚本。
-
-目前，我们的HTTP服务器需要导出的功能非常简单，因为请求服务器模块的脚本仅仅是需要启动服务器而已。
-
-我们把我们的服务器脚本放到一个叫做 start 的函数里，然后我们会导出这个函数。
-
-var http = require("http");
-
-function start() {
-  function onRequest(request, response) {
-    console.log("Request received.");
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.write("Hello World");
-    response.end();
-  }
-
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
-}
-
-exports.start = start;
-这样，我们现在就可以创建我们的主文件 index.js 并在其中启动我们的HTTP了，虽然服务器的代码还在 server.js 中。
-
-创建 index.js 文件并写入以下内容：
-
-var server = require("./server");
-
-server.start();
-正如你所看到的，我们可以像使用任何其他的内置模块一样使用server模块：请求这个文件并把它指向一个变量，其中已导出的函数就可以被我们使用了。
-
-好了。我们现在就可以从我们的主要脚本启动我们的的应用了，而它还是老样子：
-
-node index.js
-非常好，我们现在可以把我们的应用的不同部分放入不同的文件里，并且通过生成模块的方式把它们连接到一起了。
-
-我们仍然只拥有整个应用的最初部分：我们可以接收HTTP请求。但是我们得做点什么——对于不同的URL请求，服务器应该有不同的反应。
-
-对于一个非常简单的应用来说，你可以直接在回调函数 onRequest() 中做这件事情。不过就像我说过的，我们应该加入一些抽象的元素，让我们的例子变得更有趣一点儿。
-
-处理不同的HTTP请求在我们的代码中是一个不同的部分，叫做“路由选择”——那么，我们接下来就创造一个叫做 路由 的模块吧。
 
 如何来进行请求的“路由”
 
