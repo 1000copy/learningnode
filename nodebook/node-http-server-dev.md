@@ -18,7 +18,7 @@
   $node -v
   v0.12.4
 
-看到版本号打印出来的话，就说明成功了。版本嘛，偶数（偶数是稳定版，奇数是开发版）就好，大点就好。
+看到版本号？成功。版本号的话，偶数（偶数是稳定版，奇数是开发版）就好，大点就好。
 
 ##Hello World
 
@@ -155,156 +155,70 @@ createServer。创建一个http server,侦听 8888端口。如果有请求到，
 因此我不爱ide，而爱 sublime text 也基于同样的理由。
 
 
+##提供html
 
-如何来进行请求的“路由”
+易如反掌：
 
-我们要为路由提供请求的URL和其他需要的GET及POST参数，随后路由需要根据这些数据来执行相应的代码（这里“代码”对应整个应用的第三部分：一系列在接收到请求时真正工作的处理程序）。
+    var http = require("http");
+    http.createServer(function(request, response) {
+      response.end("<b>it works</b><a href='/start'>start</a>");
+    }).listen(80);
 
-因此，我们需要查看HTTP请求，从中提取出请求的URL以及GET/POST参数。这一功能应当属于路由还是服务器（甚至作为一个模块自身的功能）确实值得探讨，但这里暂定其为我们的HTTP服务器的功能。
+    $curl localhost
+    <b>it works</b><a href='/start'>start</a>
 
-我们需要的所有数据都会包含在request对象中，该对象作为onRequest()回调函数的第一个参数传递。但是为了解析这些数据，我们需要额外的Node.JS模块，它们分别是url和querystring模块。
+说明：再省点事儿，我侦听改为 80 ，这样browser不需要输入port。
 
-                               url.parse(string).query
-                                           |
-           url.parse(string).pathname      |
-                       |                   |
-                       |                   |
-                     ------ -------------------
-http://localhost:8888/start?foo=bar&hello=world
-                                ---       -----
-                                 |          |
-                                 |          |
-              querystring(string)["foo"]    |
-                                            |
-                         querystring(string)["hello"]
-当然我们也可以用querystring模块来解析POST请求体中的参数，稍后会有演示。
+##请求路由
 
-现在我们来给onRequest()函数加上一些逻辑，用来找出浏览器请求的URL路径：
+http server过来的都是URL，而我们的代码是一个个的函数。URL 映射到函数的方法，就是路由。
 
-var http = require("http");
-var url = require("url");
+因此，我们需要查看HTTP请求，从中提取出请求URL:
 
-function start() {
-  function onRequest(request, response) {
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.write("Hello World");
-    response.end();
-  }
+    var http = require("http");
+    http.createServer(function(request, response) {
+      var pathname = url.parse(request.url).pathname;
+      console.log(pathname);
+      response.end("<b>it works</b><a href='/start'>start</a>");
+    }).listen(80);
 
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
-}
+点击start url，会看到/start 打印出来。
 
-exports.start = start;
-好了，我们的应用现在可以通过请求的URL路径来区别不同请求了--这使我们得以使用路由（还未完成）来将请求以URL路径为基准映射到处理程序上。
+http 模块来的url，形如 http://domain.com:80/start?foo=bar&baz=bzz。可以通过url模块，解析它的pathname。这里的pathname = "/start"
 
-在我们所要构建的应用中，这意味着来自/start和/upload的请求可以使用不同的代码来处理。稍后我们将看到这些内容是如何整合到一起的。
+    var url = require("url");
+    var assert = require("assert")
+    var u = "http://domain.com:80/start?foo=bar&baz=bzz"
+    assert.equal("/start",url.parse(u).pathname)
 
-现在我们可以来编写路由了，建立一个名为router.js的文件，添加以下内容：
+### 路由
 
-function route(pathname) {
-  console.log("About to route a request for " + pathname);
-}
+有了路由，来自/start和/upload的请求会导流到不同函数。所以，我们应该有一个结构，map两者的关系
+  var m = [
+    {path:"/",func:foo},
+    {path:"/start",func:bar},
+    {path:"/upload",func:baz}
+  ]
 
-exports.route = route;
-如你所见，这段代码什么也没干，不过对于现在来说这是应该的。在添加更多的逻辑以前，我们先来看看如何把路由和服务器整合起来。
 
-我们的服务器应当知道路由的存在并加以有效利用。我们当然可以通过硬编码的方式将这一依赖项绑定到服务器上，但是其它语言的编程经验告诉我们这会是一件非常痛苦的事，因此我们将使用依赖注入的方式较松散地添加路由模块（你可以读读Martin Fowlers关于依赖注入的大作来作为背景知识）。
+首先，加入路由函数：
 
-首先，我们来扩展一下服务器的start()函数，以便将路由函数作为参数传递过去：
+    var http = require("http");
+    http.createServer(function(request, response) {
+      var pathname = url.parse(request.url).pathname;
+      route(pathname)(request,response);
+      response.end("<b>it works</b><a href='/start'>start</a>");
+    }).listen(80);
+    function route(pathname){
+      for(var i=0;i<m.length;i++)
+        if (m.path == pathname)
+          return m.func
+      return null
+    }
+    function foo(request, response){console.log("foo")}
+    function bar(request, response){console.log("bar")}
+    function baz(request, response){console.log("baz")}
 
-var http = require("http");
-var url = require("url");
-
-function start(route) {
-  function onRequest(request, response) {
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-
-    route(pathname);
-
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.write("Hello World");
-    response.end();
-  }
-
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
-}
-
-exports.start = start;
-同时，我们会相应扩展index.js，使得路由函数可以被注入到服务器中：
-
-var server = require("./server");
-var router = require("./router");
-
-server.start(router.route);
-在这里，我们传递的函数依旧什么也没做。
-
-如果现在启动应用（node index.js，始终记得这个命令行），随后请求一个URL，你将会看到应用输出相应的信息，这表明我们的HTTP服务器已经在使用路由模块了，并会将请求的路径传递给路由：
-
-bash$ node index.js
-Request for /foo received.
-About to route a request for /foo
-（以上输出已经去掉了比较烦人的/favicon.ico请求相关的部分）。
-
-行为驱动执行
-
-请允许我再次脱离主题，在这里谈一谈函数式编程。
-
-将函数作为参数传递并不仅仅出于技术上的考量。对软件设计来说，这其实是个哲学问题。想想这样的场景：在index文件中，我们可以将router对象传递进去，服务器随后可以调用这个对象的route函数。
-
-就像这样，我们传递一个东西，然后服务器利用这个东西来完成一些事。嗨那个叫路由的东西，能帮我把这个路由一下吗？
-
-但是服务器其实不需要这样的东西。它只需要把事情做完就行，其实为了把事情做完，你根本不需要东西，你需要的是动作。也就是说，你不需要名词，你需要动词。
-
-理解了这个概念里最核心、最基本的思想转换后，我自然而然地理解了函数编程。
-
-我是在读了Steve Yegge的大作名词王国中的死刑之后理解函数编程。你也去读一读这本书吧，真的。这是曾给予我阅读的快乐的关于软件的书籍之一。
-
-路由给真正的请求处理程序
-
-回到正题，现在我们的HTTP服务器和请求路由模块已经如我们的期望，可以相互交流了，就像一对亲密无间的兄弟。
-
-当然这还远远不够，路由，顾名思义，是指我们要针对不同的URL有不同的处理方式。例如处理/start的“业务逻辑”就应该和处理/upload的不同。
-
-在现在的实现下，路由过程会在路由模块中“结束”，并且路由模块并不是真正针对请求“采取行动”的模块，否则当我们的应用程序变得更为复杂时，将无法很好地扩展。
-
-我们暂时把作为路由目标的函数称为请求处理程序。现在我们不要急着来开发路由模块，因为如果请求处理程序没有就绪的话，再怎么完善路由模块也没有多大意义。
-
-应用程序需要新的部件，因此加入新的模块 -- 已经无需为此感到新奇了。我们来创建一个叫做requestHandlers的模块，并对于每一个请求处理程序，添加一个占位用函数，随后将这些函数作为模块的方法导出：
-
-function start() {
-  console.log("Request handler 'start' was called.");
-}
-
-function upload() {
-  console.log("Request handler 'upload' was called.");
-}
-
-exports.start = start;
-exports.upload = upload;
-这样我们就可以把请求处理程序和路由模块连接起来，让路由“有路可寻”。
-
-在这里我们得做个决定：是将requestHandlers模块硬编码到路由里来使用，还是再添加一点依赖注入？虽然和其他模式一样，依赖注入不应该仅仅为使用而使用，但在现在这个情况下，使用依赖注入可以让路由和请求处理程序之间的耦合更加松散，也因此能让路由的重用性更高。
-
-这意味着我们得将请求处理程序从服务器传递到路由中，但感觉上这么做更离谱了，我们得一路把这堆请求处理程序从我们的主文件传递到服务器中，再将之从服务器传递到路由。
-
-那么我们要怎么传递这些请求处理程序呢？别看现在我们只有2个处理程序，在一个真实的应用中，请求处理程序的数量会不断增加，我们当然不想每次有一个新的URL或请求处理程序时，都要为了在路由里完成请求到处理程序的映射而反复折腾。除此之外，在路由里有一大堆if request == x then call handler y也使得系统丑陋不堪。
-
-仔细想想，有一大堆东西，每个都要映射到一个字符串（就是请求的URL）上？似乎关联数组（associative array）能完美胜任。
-
-不过结果有点令人失望，JavaScript没提供关联数组 -- 也可以说它提供了？事实上，在JavaScript中，真正能提供此类功能的是它的对象。
-
-在这方面，http://msdn.microsoft.com/en-us/magazine/cc163419.aspx有一个不错的介绍，我在此摘录一段：
-
-在C++或C#中，当我们谈到对象，指的是类或者结构体的实例。对象根据他们实例化的模板（就是所谓的类），会拥有不同的属性和方法。但在JavaScript里对象不是这个概念。在JavaScript中，对象就是一个键/值对的集合 -- 你可以把JavaScript的对象想象成一个键为字符串类型的字典。
-
-但如果JavaScript的对象仅仅是键/值对的集合，它又怎么会拥有方法呢？好吧，这里的值可以是字符串、数字或者……函数！
-
-好了，最后再回到代码上来。现在我们已经确定将一系列请求处理程序通过一个对象来传递，并且需要使用松耦合的方式将这个对象注入到route()函数中。
 
 我们先将这个对象引入到主文件index.js中：
 
