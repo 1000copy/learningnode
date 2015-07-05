@@ -1,7 +1,62 @@
-var d  ="ls zoo -ARBC bin a b c".split(' ')
-var d  ="ls zoo -ARBC bin".split(' ')
-var argv = opt(d);
-console.dir(argv);
+
+var http = require("http");
+  var url = require("url");
+
+  var m ={}
+  m["/form"] = form
+  m["/upload"] = upload
+  m[404] = h404
+
+  function onRequest(request, response) {
+    var postData = "";
+    var pathname = url.parse(request.url).pathname;
+    console.log("Request for " + pathname + " received.");
+    var f = m[pathname]
+    if(f)
+      f(request, response)
+    else  
+      h404()
+  }
+  http.createServer(onRequest).listen(8080);
+  function h404(request, response){
+    if(response){
+        response.writeHead(404, {"Content-Type": "text/plain"});
+        response.write("404 Not found");
+        response.end();
+    }
+  }
+  function upload(request, response){
+      request.setEncoding("utf8");
+      var postData
+      var count = 0 
+      request.addListener("data", function(postDataChunk) {
+        console.log("postDataChunk.length:",postDataChunk.length);
+        postData += postDataChunk;
+        count++      
+      });
+      request.addListener("end", function() {
+        console.log(count);
+      });
+  }
+  function form(request, response){
+    var body = 
+      '<form action="/upload" method="post">'+
+      '<textarea name="text" rows="20" cols="60"></textarea>'+
+      '<input type="submit" value="Submit text" />'
+      
+      response.writeHead(200, {"Content-Type": "text/html"});
+      response.write(body);
+      response.end();
+  }
+
+function a(){var d  ="ls zoo -ARBC bin a b c".split(' ')
+    var d  ="ls zoo -ARBC bin".split(' ')
+    var argv = opt(d);
+    console.dir(argv);
+    console.log("hi,world")
+    var assert = require("assert")
+    assert.equal(true,false)
+}
 function opt(args) {
     
     var flags = { bools : {}, strings : {}, unknownFn: null };    

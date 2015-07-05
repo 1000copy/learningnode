@@ -1,4 +1,4 @@
-  var http = require("http");
+  var http = require("http");//
   var url = require("url");
 
   var m ={}
@@ -11,8 +11,10 @@
     var f = m[pathname]
     if(f)
       f(request, response)
-    else  
-      h404()
+    else
+      console.log(pathname)
+    // else  
+    //   h404()
   }
   http.createServer(onRequest).listen(8080);
 
