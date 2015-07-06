@@ -39,18 +39,58 @@ Hello world 太多，可是初学者都喜欢。所以，我老着脸，就再�
 
 ##不想重复的node app.js ?
 
-输入node app.js ,ctrol+c ,然后一百遍的重复，以便重写测试代码。这样的输入一天下来也真是厌倦。所以nodemon 可以帮忙。
+输入node app.js ,ctrl+c ,然后一百遍的重复，以便重写测试代码。这样的输入一天下来也真是厌倦。如果你和我一样，那么 nodemon 可以帮忙你。
 
 它会监视当前目录，如果发现代码有修改，就会自动重启代码。
 
     npm i nodemon 
     nodemon app.js
 
+npm i表示从npm仓库安装nodemon。npm是node社区一位领袖创建，依我看是目前最好的模块系统。模块数量也是主流脚本中数量最高的。虽然这不代表质量，但是说明门槛低，方便，大家因此愿意提交模块。npm内置，简单，极其方便，算得上node的一大特色。
+
 然后修改你的app.js ，会发现nodemon自动运行app.js 。
 
 我的双显示器正好派上用场。一块运行nodemon,另外一块作为编辑器的工作台，编写我的app.js，然后save。这个小小的机器人不厌其烦的检测file save->重启app.js->显示错误（甚至app.js也crash。当然nodemon不会因此也crash）->待你修正保存。直接正确为止。
 
 虽然功能简单，但是恰如其分，一个好工具。
+
+当我准备好代码app.js 
+
+    console.log("hi")
+
+然后nodemon app.js ,可以看到输出：
+
+    6 Jul 08:45:12 - [nodemon] v1.3.7
+    6 Jul 08:45:12 - [nodemon] to restart at any time, enter `rs`
+    6 Jul 08:45:12 - [nodemon] watching: *.*
+    6 Jul 08:45:12 - [nodemon] starting `node app.js`
+    hi
+    6 Jul 08:45:12 - [nodemon] clean exit - waiting for changes before restart
+打印了hi。这时我想要改下代码，输出点具体的：
+
+    console.log("hi,node")
+
+在保存，就可以看到：
+
+    6 Jul 08:47:17 - [nodemon] restarting due to changes...
+    6 Jul 08:47:17 - [nodemon] starting `node app.js`
+    hi,node
+    6 Jul 08:47:17 - [nodemon] clean exit - waiting for changes before restart
+
+你看，我不需要在自己执行node app.js ,它会执行后等待变化，然后启动。
+即使我改变代码为：
+
+    process.exit(0)
+
+也不会总体退出：
+
+    6 Jul 08:51:22 - [nodemon] restarting due to changes...
+
+    6 Jul 08:51:22 - [nodemon] starting `node app.js`
+    6 Jul 08:51:22 - [nodemon] clean exit - waiting for changes before restart
+
+
+虽然感觉稍微慢了点，总比我编码快，够用了。
 
 ## 异步来了
 
@@ -475,7 +515,7 @@ formidable 会把此上传文件放到一个当前用户的临时目录内。并
 
 
 
-###展现图片到浏览器(TODO : 代码有错)
+###展现图片到浏览器
 
 我们来添加/show 请求处理程序，它硬编码显示刚刚传递的png到浏览器中。
 
@@ -484,25 +524,26 @@ formidable 会把此上传文件放到一个当前用户的临时目录内。并
 
     var m ={}
     m["/show"] = show 
-
+    m["/favicon"] = favicon
     function onRequest(request, response) {
-      var postData = "";
       var pathname = url.parse(request.url).pathname;
       console.log("Request for " + pathname + " received.");
       var f = m[pathname]
       if(f)
         f(request, response)
       else  
-        h404()
+        h404(request, response)
     }
     http.createServer(onRequest).listen(80);
 
 
-    function show(r,response) {  
+    function show(request,response) {  
       var fs = require("fs")
-      fs.readFile("C:/Users/rita/AppData/Local/Temp/upload_b3fa645d2425bc9f768494573a09b8ce", "binary", function(error, file) {
+      // 替换为你的文件
+      var last_uploadfile ="C:/Users/rita/AppData/Local/Temp/upload_b3fa645d2425bc9f768494573a09b8ce"
+      fs.readFile(last_uploadfile, "binary", function(error, file) {
         if(error) {
-          h500()
+          h404(request,response)
         } else {
           response.writeHead(200, {"Content-Type": "image/png"});
           response.write(file, "binary");
@@ -510,11 +551,13 @@ formidable 会把此上传文件放到一个当前用户的临时目录内。并
         }
       });
     }
-    function h500(request, response){
-          response.writeHead(404, {"Content-Type": "text/plain"});
-          response.write("404 Not found");
-          response.end();
+    function h404(request, response){
+      if (response){
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.write("404 Not found");
+            response.end();}
     }
+    function favicon(request, response){}
 
 
 重启服务器之后，通过访问http://localhost/show，就可以看到保存在刚刚上传的图片了
@@ -552,4 +595,4 @@ formidable 会把此上传文件放到一个当前用户的临时目录内。并
 
 我(一路大跌眼镜)[http://1000copy.farbox.com/post/crossing-eye-s-hell]，一次次的修正自己的认识，于是我真心的想要花点气力研究，以便充分的从此语言中获益。
 
-无论如何，js是现代编程的一个必选项。并且，用一样的语言可以同时完成前后端的代码，只是想想也会感到很棒。
+无论如何，js是b/s编程的一个必选项。反正都要选，如果还可以同时完成后端的代码，只是想想也会感到很棒。
