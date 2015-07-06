@@ -56,12 +56,12 @@ Hello world 太多，可是初学者都喜欢。所以，我老着脸，就再�
 
 要是想要启动后延时1秒在say hi，怎么办？
 
-  function hi(){console.log("hi")}
-  setTimeout(hi,1000)
+    function hi(){console.log("hi")}
+    setTimeout(hi,1000)
 
 setTimeout是一个全局函数，文档这样说明它的规格：
 
-  setTimeout(callback, delay[, arg][, ...])#
+    setTimeout(callback, delay[, arg][, ...])#
 
 第一个参数，名字为callback，作为js的文档约定，说明此参数可以是一个函数。我们可以把函数作为变量传递给SetTimeout。这里传递的不是hi的结果，而是hi 本身！setTimeout会在它的实现内调用它。
 
@@ -81,8 +81,10 @@ setTimeout是一个全局函数，文档这样说明它的规格：
     console.log("ready")
 
 输出：
-    ready
-    hi
+
+      ready
+      hi
+
 这个期间，node可以继续处理其他的工作，setTimeout 不会被阻塞，而是可以继续执行后面的代码。2行代码，其实执行线索上看有两条。
 
 node大量使用异步代码，以此为卖点。怎么强调这个特性也不为过。对于强调并发的服务器编码，可以无需诉诸于多线程就能多线索的处理并发客户端需求。后面会看到在http sever内对此特性的使用和分析。
@@ -95,10 +97,10 @@ node大量使用异步代码，以此为卖点。怎么强调这个特性也不�
 
 看看我们可以做点什么:
 
--用户可以通过浏览器使用我们的应用
--用户请求http://domain/时，可以看到一个Apache Style的 It works 
--用户访问http://domain/start ,可以看到一个upload Form，利用它来上传图片
--用户访问http://domain/show , 可以显示此上传图片
+- 用户可以通过浏览器使用我们的应用
+- 用户请求http://domain/时，可以看到一个Apache Style的 It works 
+- 用户访问http://domain/start ,可以看到一个upload Form，利用它来上传图片
+- 用户访问http://domain/show , 可以显示此上传图片
 
 
 
