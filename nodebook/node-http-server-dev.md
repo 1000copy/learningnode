@@ -43,8 +43,8 @@ Hello world 太多，可是初学者都喜欢。所以，我老着脸，就再�
 
 它会监视当前目录，如果发现代码有修改，就会自动重启代码。
 
-  npm i nodemon 
-  nodemon app.js
+    npm i nodemon 
+    nodemon app.js
 
 然后修改你的app.js ，会发现nodemon自动运行app.js 。
 
