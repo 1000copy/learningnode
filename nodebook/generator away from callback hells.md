@@ -205,6 +205,63 @@ Generators算得上js的一个新概念函数。它看起来像是一个函数�
  - delay 在1200ms后完成，调用resume
  - resume 告诉generator 在走一步。并且传递delay的结果给run函数，由console 打印
 
+###co 更好
+
+上面谈到的做法，确实可以把异步改成同步了。可是并不太完美：比如resume显得比较突兀，在比如只能在callback返回一个值。不够通用。
+
+这样的话，可以考虑TJ开发的co。连resume的声明和引用也省掉了。还是以delay为例:
+
+        var co = require('co');
+        function delay(time) {
+          return function (callback){
+            setTimeout(function () {//
+              callback(null,"Slept for "+time);
+            }, time);
+          }
+        }
+
+        co(function *() {
+          console.log(yield delay(1000))
+          console.log(yield delay(1200))  
+        })
+
+为了和co适配，delay需要做些修改，去掉callback，返回一个带callback的函数，把计算结果通过callback传递出去。第一个参数依照node的规矩，留给err。
+
+更绝。怪的不TJ被社区成为大神。
+
+再来一个。readFile(file,callback），作为常见的异步函数如何修改？
+
+        var co = require('co');
+        function readFile(file){
+          return function (callback ){
+            var fs = require("fs")
+            fs.readFile(file,callback)
+          }
+        }
+
+        co(function *() {
+          console.log(yield readFile("./app.js"))
+        })
+
+        //<Buffer 76 61 72 20 63 ... >
+
+
+
+可是，readFile改造这样过工作，纯粹就是boilerplate ！所以，有人做了这样的工作。安装co-fs,就可以：
+
+        co(function *() {
+          var fs = require("co-fs")
+          var js = yield fs.readFile('./app1.js', 'utf8')
+          var files = yield fs.readdir('.')
+          console.log(js,files)
+        })
+
+node.js真是玩梯云纵。以为已经很好了，还是有人在加入一把火。
+
+所以，值得去npm看看，查找下co-打头的库，有1000+个，要不要独立出去:)：
+
+        https://www.npmjs.com/search?q=co
+
 ###打个总结
 
 成功。我们用generator替换了callback。我们这样做到的:
@@ -216,4 +273,10 @@ Generators算得上js的一个新概念函数。它看起来像是一个函数�
 generators替代“callback hell” 是否最佳是可争论的，但是这个练习可以帮助你理解到ES6的generators 和iterators 
 
 原文：http://modernweb.com/2014/02/10/replacing-callbacks-with-es6-generators/
+参考：
+
+Harmony Generator, yield, ES6, co框架学习 - http://bg.biedalian.com/2013/12/21/harmony-generator.html
+Koa, co and coruntine - Harmony - 前端乱炖 - http://www.html-js.com/article/1752
+### fork me
+
 fork me from :https://github.com/1000copy/learningnode/blob/master/nodebook/generator%20away%20from%20callback%20hells.md
