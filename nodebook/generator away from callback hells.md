@@ -94,16 +94,6 @@ Generators算得上js的一个新概念函数。它看起来像是一个函数�
 
 这就是generator。古怪，有趣。接下来会继续分析它的应用，在解决callback hell方面。
 
-## 再来验证下你的node支持generator？
-
-在node 0.11以上，对node必须加入--harmony 参数：
-
-        $ node --harmony
-        > function *a(){}
-        undefined
-        >
-
-看到undefined就说明支持了。
 
 ###问题
 
@@ -226,3 +216,4 @@ Generators算得上js的一个新概念函数。它看起来像是一个函数�
 generators替代“callback hell” 是否最佳是可争论的，但是这个练习可以帮助你理解到ES6的generators 和iterators 
 
 原文：http://modernweb.com/2014/02/10/replacing-callbacks-with-es6-generators/
+fork me from :https://github.com/1000copy/learningnode/blob/master/nodebook/generator%20away%20from%20callback%20hells.md
