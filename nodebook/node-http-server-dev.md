@@ -108,9 +108,9 @@ node大量使用异步代码，以此为卖点。怎么强调这个特性也不�
 
 我们来分解一下这个应用，为了实现上文的用例，我们需要实现哪些部分呢？
 
--提供html页面，-> 需要HTTP Server
--路由。不同的URL，会有不同的处理模块（function）。匹配两者的模块，就叫做路由。
--能处理POST数据，能够处理上传图片
+- 提供html页面，-> 需要HTTP Server
+- 路由。不同的URL，会有不同的处理模块（function）。匹配两者的模块，就叫做路由。
+- 能处理POST数据，能够处理上传图片
 
 路由这样的工作，以往是有Web Server会处理。可是我们现在要自己做。
 
@@ -130,7 +130,7 @@ node大量使用异步代码，以此为卖点。怎么强调这个特性也不�
 
 呃。完了？嗯。用node跑跑。
 
-   nodemon server.js
+    nodemon server.js
 
 开一个浏览器（我爱chrome）访问http://localhost:8888/，看到 42 就成了。
 
@@ -140,18 +140,18 @@ node大量使用异步代码，以此为卖点。怎么强调这个特性也不�
 
 我们可以先看以上代码的主线索,启动服务器，并侦听8888端口：
 
-  var http = require("http");
+    var http = require("http");
 
-  var server = http.createServer();
-  server.listen(8888);
+    var server = http.createServer();
+    server.listen(8888);
 
 
 createServer。创建一个http server,侦听 8888端口。如果有请求到，就调用匿名函数：
 
-    function(request, response) {
-      response.setHeader('content-type', 'text/plain')
-      response.end("42");
-    }
+      function(request, response) {
+        response.setHeader('content-type', 'text/plain')
+        response.end("42");
+      }
 
 在此函数内，调用response.end,把内容（42）发送给Browser。
 
@@ -162,14 +162,15 @@ setHeader指明返回给浏览器的内容的格式。这里指明内容为平�
 ### 玩玩http
 
 启动服务后
-  nodemon server.js
+
+    nodemon server.js
 
 可以在chrome内访问 localhost:8888,多开几个标签，都来打开 http://localhost:8888/，可以看到这个server总可以沉着的、稳定而单调的返回42 。多用户访问哦。
 
 更多时候，我会用curl，一个命令行的browser模拟器。
 
-  curl http://localhost:8888/
-  42
+    curl http://localhost:8888/
+    42
 
 实际上，开发node应用，第一次我常常会用chrome访问测试，后来的反复越多，我越会倾向于使用curl。如果我做这样app，我只有关心返回的是不是我期望的42，而不必关心chrome的进度条，菜单，状态栏。。。多好。42 ！最低眼球识别成本。
 
@@ -180,13 +181,13 @@ setHeader指明返回给浏览器的内容的格式。这里指明内容为平�
 
 易如反掌：
 
-    var http = require("http");
-    http.createServer(function(request, response) {
-      response.end("<b>it works</b><a href='/start'>start</a>");
-    }).listen(80);
+      var http = require("http");
+      http.createServer(function(request, response) {
+        response.end("<b>it works</b><a href='/start'>start</a>");
+      }).listen(80);
 
-    $curl localhost
-    <b>it works</b><a href='/start'>start</a>
+      $curl localhost
+      <b>it works</b><a href='/start'>start</a>
 
 说明：
 为了再省点事儿，我侦听改为 80 ，这样browser输入url的时候，不需要输入port。
@@ -217,32 +218,32 @@ http 模块来的url，形如 http://domain.com:80/start?foo=bar&baz=bzz。可�
 
 有了路由，来自/start和/upload的请求会导流到不同函数。所以，我们应该有一个结构，map两者的关系
 
-  var m = [
-    {path:"/",func:function (){return "/"}},
-    {path:"/start",func:function (){return "/start"}},
-    {path:"/upload",func:function (){return "/upload"}}
-  ]
+    var m = [
+      {path:"/",func:function (){return "/"}},
+      {path:"/start",func:function (){return "/start"}},
+      {path:"/upload",func:function (){return "/upload"}}
+    ]
 
 
 首先，加入路由函数：
 
 
-  var http = require("http");
-  http.createServer(function(request, response) {
-    var pathname = require("url").parse(request.url).pathname;
-    var r = route(pathname)
-    if (r)
-       response.end(r());
-    else
-       response.end("<b>it works</b>");
-  }).listen(80);
-  function route(pathname){
-    for(var i=0;i<m.length;i++){
-      if (m[i].path == pathname)
-        return m[i].func
+    var http = require("http");
+    http.createServer(function(request, response) {
+      var pathname = require("url").parse(request.url).pathname;
+      var r = route(pathname)
+      if (r)
+         response.end(r());
+      else
+         response.end("<b>it works</b>");
+    }).listen(80);
+    function route(pathname){
+      for(var i=0;i<m.length;i++){
+        if (m[i].path == pathname)
+          return m[i].func
+      }
+      return null
     }
-    return null
-  }
 
 我们故伎重演，用curl解放眼球：
 
@@ -258,16 +259,16 @@ http 模块来的url，形如 http://domain.com:80/start?foo=bar&baz=bzz。可�
 
   数学上，有时候仅仅是改变下公式内元素的位置，就可以让解析或者证明变得更加容易。代码也是。我们把上面的m 映射改成：
 
-  var m ={}
-  m["/"] = function (){return "/"}
-  m["/start"] = function (){return "/start"}
-  m["/upload"] = function (){return "/upload"}
+    var m ={}
+    m["/"] = function (){return "/"}
+    m["/start"] = function (){return "/start"}
+    m["/upload"] = function (){return "/upload"}
 
   表达的内容是等效的 。但是对于解析函数route会更加简单。
 
-  function route(pathname){
-    return m[pathname]
-  }
+    function route(pathname){
+      return m[pathname]
+    }
 
 目前我们什么都混在一起。也会继续混到一起：代码还不多，这样有利于把握整体。
 
@@ -291,13 +292,13 @@ http 模块来的url，形如 http://domain.com:80/start?foo=bar&baz=bzz。可�
 
 故伎重演。不过稍作变化。因为curl可以帮助统计运行时间，所以我们来利用下：
   
-  curl  -w %{time_total}\\n localhost:8888/upload
-  /upload 0.002
+    curl  -w %{time_total}\\n localhost:8888/upload
+    /upload 0.002
 
 很快出结果，0.002，就是2毫秒。
 
-  $ curl  -w %{time_total}\\n localhost:8888/start
-  start 5.001
+    $ curl  -w %{time_total}\\n localhost:8888/start
+    start 5.001
 
 5毫秒。多一点。正如所愿。
 
@@ -310,14 +311,14 @@ http 模块来的url，形如 http://domain.com:80/start?foo=bar&baz=bzz。可�
 
 然后，一二三，执行第二个，然后执行第一个。快点。
 
-  $ curl  -w \\n%{time_total}\\n localhost:8888/start
-  /start
-  5.013
+    $ curl  -w \\n%{time_total}\\n localhost:8888/start
+    /start
+    5.013
 
 
-  $ curl  -w \\n%{time_total}\\n localhost:8888/upload
-  /upload
-  4.353
+    $ curl  -w \\n%{time_total}\\n localhost:8888/upload
+    /upload
+    4.353
 
 
 upload没有任何修改，本来执行很快，现在却慢到需要几乎5ms呢？
@@ -330,58 +331,59 @@ Node是单线程的。它通过事件轮询（event loop）来实现并行操作
 ###POST 文本块到服务器
 
 简单的用例：
+
 1. 显示一个文本区（textarea）供用户输入内容，然后通过POST请求到服务器。
 2. 服务器通过处理程序将输入的内容展示到浏览器中。
 
 /start请求处理程序用于生成带文本区的表单，因此，我们将 app.js修改为如下形式：
 
-  var http = require("http");
-  var url = require("url");
+    var http = require("http");
+    var url = require("url");
 
-  var m ={}
-  m["/form"] = form
-  m["/upload"] = upload
-  m[404] = h404
+    var m ={}
+    m["/form"] = form
+    m["/upload"] = upload
+    m[404] = h404
 
-  function onRequest(request, response) {
-    var postData = "";
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-    var f = m[pathname]
-    if(f)
-      f(request, response)
-    else  
-      h404()
-  }
-  http.createServer(onRequest).listen(80);
-  function h404(request, response){
-        response.writeHead(404, {"Content-Type": "text/plain"});
-        response.write("404 Not found");
+    function onRequest(request, response) {
+      var postData = "";
+      var pathname = url.parse(request.url).pathname;
+      console.log("Request for " + pathname + " received.");
+      var f = m[pathname]
+      if(f)
+        f(request, response)
+      else  
+        h404()
+    }
+    http.createServer(onRequest).listen(80);
+    function h404(request, response){
+          response.writeHead(404, {"Content-Type": "text/plain"});
+          response.write("404 Not found");
+          response.end();
+    }
+    function upload(request, response){
+        request.setEncoding("utf8");
+        var postData
+        var count = 0 
+        request.addListener("data", function(postDataChunk) {
+          console.log("postDataChunk.length:",postDataChunk.length);
+          postData += postDataChunk;
+          count++      
+        });
+        request.addListener("end", function() {
+          console.log(count);
+        });
+    }
+    function form(request, response){
+      var body = 
+        '<form action="/upload" method="post">'+
+        '<textarea name="text" rows="20" cols="60"></textarea>'+
+        '<input type="submit" value="Submit text" />'
+        
+        response.writeHead(200, {"Content-Type": "text/html"});
+        response.write(body);
         response.end();
-  }
-  function upload(request, response){
-      request.setEncoding("utf8");
-      var postData
-      var count = 0 
-      request.addListener("data", function(postDataChunk) {
-        console.log("postDataChunk.length:",postDataChunk.length);
-        postData += postDataChunk;
-        count++      
-      });
-      request.addListener("end", function() {
-        console.log(count);
-      });
-  }
-  function form(request, response){
-    var body = 
-      '<form action="/upload" method="post">'+
-      '<textarea name="text" rows="20" cols="60"></textarea>'+
-      '<input type="submit" value="Submit text" />'
-      
-      response.writeHead(200, {"Content-Type": "text/html"});
-      response.write(body);
-      response.end();
-  }
+    }
 
 
 
@@ -424,6 +426,7 @@ POST数据可能很大，为了使整个过程不会阻塞，Node会将POST数�
 ### 文件上传
 
 最后，实现用例：
+
 1. 允许用户上传图片
 2. 并将该图片在浏览器中显示出来。
 
@@ -431,44 +434,44 @@ POST数据可能很大，为了使整个过程不会阻塞，Node会将POST数�
 
 完成模块安装：
 
-  npm install formidable
+    npm install formidable
 
 用require语句引入：
 
-var formidable = require("formidable");
+    var formidable = require("formidable");
 
 该模块可以解析来自HTTP POST的表单:
 
 
-  var formidable = require('formidable'),
-      http = require('http'),
-      util = require('util');
+    var formidable = require('formidable'),
+        http = require('http'),
+        util = require('util');
 
-  http.createServer(function(req, res) {
-    if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
-      var form = new formidable.IncomingForm();
-      form.parse(req, function(err, fields, files) {      
-        res.end('received upload:\n',files.upload.path);
-      });    
-    }
+    http.createServer(function(req, res) {
+      if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
+        var form = new formidable.IncomingForm();
+        form.parse(req, function(err, fields, files) {      
+          res.end('received upload:\n',files.upload.path);
+        });    
+      }
 
-    // show a file upload form
-    res.writeHead(200, {'content-type': 'text/html'});
-    res.end(
-      '<form action="/upload" enctype="multipart/form-data" '+
-      'method="post">'+
-      '<input type="text" name="title"><br>'+
-      '<input type="file" name="upload" multiple="multiple"><br>'+
-      '<input type="submit" value="Upload">'+
-      '</form>'
-    );
-  }).listen(8888);
+      // show a file upload form
+      res.writeHead(200, {'content-type': 'text/html'});
+      res.end(
+        '<form action="/upload" enctype="multipart/form-data" '+
+        'method="post">'+
+        '<input type="text" name="title"><br>'+
+        '<input type="file" name="upload" multiple="multiple"><br>'+
+        '<input type="submit" value="Upload">'+
+        '</form>'
+      );
+    }).listen(8888);
 
 在表单中添加一个文件上传元素。只需要在HTML表单中，添加一个multipart/form-data的编码类型。
 
 formidable 会把此上传文件放到一个当前用户的临时目录内。并在files.upload.path 通知调用者具体位置:
 
-  received upload:C:\Users\rita\AppData\Local\Temp\upload_b3fa645d2425bc9f768494573a09b8ce
+    received upload:C:\Users\rita\AppData\Local\Temp\upload_b3fa645d2425bc9f768494573a09b8ce
 
 
 
@@ -476,42 +479,42 @@ formidable 会把此上传文件放到一个当前用户的临时目录内。并
 
 我们来添加/show 请求处理程序，它硬编码显示刚刚传递的png到浏览器中。
 
-  var http = require("http");
-  var url = require("url");
+    var http = require("http");
+    var url = require("url");
 
-  var m ={}
-  m["/show"] = show 
+    var m ={}
+    m["/show"] = show 
 
-  function onRequest(request, response) {
-    var postData = "";
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-    var f = m[pathname]
-    if(f)
-      f(request, response)
-    else  
-      h404()
-  }
-  http.createServer(onRequest).listen(80);
+    function onRequest(request, response) {
+      var postData = "";
+      var pathname = url.parse(request.url).pathname;
+      console.log("Request for " + pathname + " received.");
+      var f = m[pathname]
+      if(f)
+        f(request, response)
+      else  
+        h404()
+    }
+    http.createServer(onRequest).listen(80);
 
 
-  function show(r,response) {  
-    var fs = require("fs")
-    fs.readFile("C:/Users/rita/AppData/Local/Temp/upload_b3fa645d2425bc9f768494573a09b8ce", "binary", function(error, file) {
-      if(error) {
-        h500()
-      } else {
-        response.writeHead(200, {"Content-Type": "image/png"});
-        response.write(file, "binary");
-        response.end();
-      }
-    });
-  }
-  function h500(request, response){
-        response.writeHead(404, {"Content-Type": "text/plain"});
-        response.write("404 Not found");
-        response.end();
-  }
+    function show(r,response) {  
+      var fs = require("fs")
+      fs.readFile("C:/Users/rita/AppData/Local/Temp/upload_b3fa645d2425bc9f768494573a09b8ce", "binary", function(error, file) {
+        if(error) {
+          h500()
+        } else {
+          response.writeHead(200, {"Content-Type": "image/png"});
+          response.write(file, "binary");
+          response.end();
+        }
+      });
+    }
+    function h500(request, response){
+          response.writeHead(404, {"Content-Type": "text/plain"});
+          response.write("404 Not found");
+          response.end();
+    }
 
 
 重启服务器之后，通过访问http://localhost/show，就可以看到保存在刚刚上传的图片了
