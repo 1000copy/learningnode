@@ -30,6 +30,15 @@
 
 为此，有些人想到的方法，就是干脆连等：
 
-    module.exports = exports = foo = function foo() {...}
+    module.exports = exports = foo = function () {...}
 
-这样的boilerplate ,常常可以在模块开发代码中看到，有点古怪，却自有它的道理
+这样的boilerplate ,常常可以在模块开发代码中看到，有点古怪，却自有它的道理:
+
+		1. 可以导出此函数
+		2. 随后可以用foo，或者exports引用函数
+
+如果是引出多个函数，那么用exports更优，因为简洁：
+
+		exports.foo = function(){}
+		exports.bar = function(){}
+
