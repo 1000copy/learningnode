@@ -299,3 +299,385 @@ Duplex流是一个可读也可写的流。比如：
 	- unshift使用部分和概念关心不大，属于技巧部分，从主体中移动到高级内。
 
 > 不喜欢就走开，不要来喷。
+
+
+-----------等待整理
+##node duplex 全双工
+
+全双工的定义就是可以同时读写，实际上一个全双工流有两个stream嵌入，分别做流入和流程。
+
+如果stdin和stdout打包一起作为一个全双工流，那么用这一个流就可以同时做读和写。
+
+socket就是一个Duplex 案例。Node.js 的 socket就是一个全双工流，在socket上，内有两个通道，分别做数据收发，看起来是socket一个对象同时做收发。
+
+    //Server.js
+    var net = require('net');     
+    var server = net.createServer(function(socket) {
+    	socket.write('Echo server\r\n');
+    	socket.pipe(socket);
+    });     
+    server.listen(1337, '127.0.0.1');
+    //client.js
+    var net = require('net');
+     
+    var client = new net.Socket();
+    client.connect(1337, '127.0.0.1', function() {
+    	console.log('Connected');
+    	client.write('Hello, server! Love, Client.');
+    });
+     
+    client.on('data', function(data) {
+    	console.log('Received: ' + data);
+    	client.destroy(); // kill client after server's response
+    });
+     
+    client.on('close', function() {
+    	console.log('Connection closed');
+    });
+
+### Creating a custom duplex stream
+
+ -  Create a class which inherits from the Duplex abstract class
+ -  Implement _write(chunk, encoding, cb) method for sending data
+ -  Implement _read(n) method for receiving data
+
+### Creating duplex stream with read timer and write logging
+
+To show the independent nature of the two embedded streams, this example creates a duplex class which:
+
+generates the current time string every second on the read stream
+
+outputs the write stream to stdout
+
+    var stream = require('stream');
+    var util = require('util');
+    var Duplex = stream.Duplex     
+    // 定义一个定制流类别 DRTimeWLog ，继承自Duplex 
+    function DRTimeWLog(options) {
+      Duplex.call(this, options); 
+      this.readArr = [];     
+      // every second, add new time string to array
+      this.timer = setInterval(addTime, 1000, this.readArr);
+    }
+    // 指定继承关系 
+    util.inherits(DRTimeWLog, Duplex);
+    
+    /* add new time string to array to read */
+    function addTime(readArr) {
+      readArr.push((new Date()).toString());
+    }
+    // 覆盖_read方法，以便实现接收。
+    DRTimeWLog.prototype._read = function readBytes(n) {
+      var self = this;
+      while (this.readArr.length) {
+        var chunk = this.readArr.shift();
+        if (!self.push(chunk)) {
+          break; // false from push, stop reading
+        }
+      }
+      if (self.timer) { // continuing if have timer
+        // call readBytes again after a second has
+        // passed to see if more data then
+        setTimeout(readBytes.bind(self), 1000, n);
+      } else { // we are done, push null to end stream
+        self.push(null);
+      }
+    };
+    
+    /* stops the timer and ends the read stream */
+    DRTimeWLog.prototype.stopTimer = function () {
+      if (this.timer) clearInterval(this.timer);
+      this.timer = null;
+    };
+    
+    /* for write stream just ouptut to stdout */
+    DRTimeWLog.prototype._write =
+      function (chunk, enc, cb) {
+        console.log('write: ', chunk.toString());
+        cb();
+      };
+    
+    
+    // try out DRTimeWLog
+    var duplex = new DRTimeWLog();
+    // 何时readable发生？
+    // When a chunk of data can be read from the stream, it will emit a 'readable' event.
+    // 如果知道有一段数据可以读? 当然必须调用_read 收数据才可能。因此，必定是在创建流之后，流就会调用一次_read——问问你是否有可读的东西来？如果_read内做了内容的.push ,更改了流的内部buffer，流会知道这个改变，于是emit 一个readable的事件，以供流的消费者读取使用
+    // 就是说_read 尽管和read非常接近，却不是read调用的_read 。_read更像是流的另外一端，提供进数据来，read则是读出数据。这和名字暗指的很不相同因此不易了解。并且流内部只会调用一次，如果_read可能需要做几次读知道可以push(null),就在自己在调用自己（setTimeout(readBytes.bind(self), 1000, n);）
+    // 当然，以上都是猜测。
+    
+    duplex.on('readable', function () {
+      var chunk;
+      while (null !== (chunk = duplex.read())) {
+        console.log('read: ', chunk.toString());
+      }
+    });
+    duplex.write('Hello \n');
+    duplex.write('World');
+    duplex.end();
+    
+    // after 3 seconds stop the timer
+    setTimeout(function () {
+      duplex.stopTimer();
+    }, 3000);
+The above example has output similar to the following:
+
+write:  Hello
+
+write:  World
+read:  Mon Aug 25 2013 17:57:14 GMT-0500 (CDT)
+read:  Mon Aug 25 2013 17:57:15 GMT-0500 (CDT)
+read:  Mon Aug 25 2013 17:57:16 GMT-0500 (CDT)
+
+
+### passthrough
+
+###Creating duplex passthrough stream
+
+
+每个Passthrough 都可以叠加额外的变换，而不必把所有的逻辑集中到一个模块内。这个Passthrough 可以是过滤，压缩，加密，
+
+一方面，感觉 node-http2 就是用着个技术。一个流进来，先后进行解压，反系列化（buffer->Frame),就是利用的Passthrough 技术，把几个 Passthrough 用管道连接起来，每个节点做各自的处理。另一方面，好像node-http2 好像没有这么罗嗦。
+
+
+实现 duplex passthrough stream ，需要嵌入两个 PassThrough stream 到类内，以便加入我们自己的  _read() ， _write() 方法.
+
+
+    var fs = require('fs');
+    var stream = require('stream');
+    var util = require('util');
+    
+    var Duplex = stream.Duplex ||
+      require('readable-stream').Duplex;
+    
+    var PassThrough = stream.PassThrough ||
+      require('readable-stream').PassThrough;
+    
+    /**
+     * Duplex stream created with two transform streams
+     * - inRStream - inbound side read stream
+     * - outWStream - outbound side write stream
+     */
+    function DuplexThrough(options) {
+      if (!(this instanceof DuplexThrough)) {
+        return new DuplexThrough(options);
+      }
+      Duplex.call(this, options);
+      // 加入两个 PassThrough
+      this.inRStream = new PassThrough();
+      this.outWStream = new PassThrough();
+      this.leftHandlersSetup = false; // only setup the handlers once
+    }
+    util.inherits(DuplexThrough, Duplex);
+    
+    // 把_write方法导向到 .inRStream.write
+    DuplexThrough.prototype._write =
+      function (chunk, enc, cb) {
+        this.inRStream.write(chunk, enc, cb);
+      };
+    
+    /* left outbound side */
+    /*
+    当 outWStream  的事件 readable,end 发生时，去引发 outWStream.read 方法
+     */
+    DuplexThrough.prototype.setupLeftHandlersAndRead = function (n) {
+      var self = this;
+      self.leftHandlersSetup = true; // only set handlers up once
+      self.outWStream
+        .on('readable', function () {
+          self.readLeft(n);
+        })
+        .on('end', function () {
+          self.push(null); // EOF
+        });
+    };
+    
+    DuplexThrough.prototype.readLeft = function (n) {
+      var chunk;
+      while (null !==
+             (chunk = this.outWStream.read(n))) {
+        // if push returns false, stop writing
+        if (!this.push(chunk)) break;
+      }
+    };
+    
+    DuplexThrough.prototype._read = function (n) {
+      // first time, setup handlers then read
+      if (!this.leftHandlersSetup) {
+        return this.setupLeftHandlersAndRead(n);
+      }
+      // otherwise just read
+      this.readLeft(n);
+    };
+    
+    
+    // try out DuplexThrough w/fileReadStream and writes
+    var rstream = fs.createReadStream('myfile.txt');
+    var duplex = new DuplexThrough();
+    
+    // inbound side - pipe file through
+    duplex.inRStream
+      .on('readable', function () {
+        var chunk;
+        while (null !==
+               (chunk = duplex.inRStream.read())) {
+          console.log('in: ', chunk.toString());
+        }
+      });
+    rstream.pipe(duplex);
+    
+    
+    // outbound side - write Hello \nworld
+    duplex
+      .on('readable', function () {
+        var chunk;
+        while (null !== (chunk = duplex.read())) {
+          console.log('out: ', chunk.toString());
+        }
+      });
+    duplex.outWStream.write('Hello \n');
+    duplex.outWStream.write('world');
+    duplex.outWStream.end();
+Running the example produces output like:
+
+out:  Hello
+world
+in:  Simple text file
+
+ - one
+ - two
+ - three
+Duplex streams summary
+
+
+## 和流有关的两个概念Deplex ,Transform 
+
+###A Duplex stream 
+can be thought of a readable stream with a writable stream. Both are independent and each have separate internal buffer. The reads and writes events happen independently.
+
+                             Duplex Stream
+                          ------------------|
+                    Read  <-----               External Source
+            You           ------------------|   
+                    Write ----->               External Sink
+                          ------------------|
+            You don't get what you write. It is sent to another source.
+###A Transform stream 
+is a duplex where the read and write takes place in a causal way. The end points of the duplex stream are linked via some transform. Read requires write to have occurred.
+
+                                 Transform Stream
+                           --------------|--------------
+            You     Write  ---->                   ---->  Read  You
+                           --------------|--------------
+            You write something, it is transformed, then you read something.
+            
+            
+
+causal adj.具有因果关系的，构成原因的
+
+###用字符串构建一个流（这样比起文件或者socket，依赖要少得多）
+
+    var Stream = require('stream');
+    var stream = new Stream();
+    
+    stream.pipe = function(dest) {
+      dest.write('your string');
+      return dest;
+    };
+    
+    stream.pipe(process.stdout); 
+    
+### Transform 
+
+     describe('scenario', function() {  
+        it('should work as expected', function(done) {
+      var Transform = require('stream').Transform;
+      var Stream = require('stream');
+      var stream = new Stream();
+
+      stream.pipe = function(dest) {
+        dest.write('abc');
+        return dest;
+      };
+      function createParser () {
+          var parser = new Transform();
+          parser._transform = function(data, encoding, done) {
+              // data is Buffer object 
+              this.push(data.slice(0,1));
+              done();
+          };
+          return parser;
+      }
+      //  a transformer ,transmit abc to a
+      var p = createParser();
+      stream.pipe(p).pipe(process.stdout); 
+      expect('a').to.be.equal('a');
+      // console.log(1)
+      done();
+    });
+    
+## 当stream1.pipe(stream2)的时候，到底方式了什么？
+
+曾经对使用pipe困惑不已。比如：
+
+	var Readable = require('stream').Readable;
+	var rs = Readable();
+
+	var c = 97;
+	rs._read = function () {
+	    rs.push(String.fromCharCode(c++));
+	    if (c > 'z'.charCodeAt(0)) rs.push(null);
+	};
+
+	rs.pipe(process.stdout);
+
+1. 何不直接打印？
+2. pipe高乐搞了什么？
+
+	for(var c = 'a'.charCodeAt(0);c<'z'.charCodeAt(0);c++)
+	  console.log(c)
+	
+
+当
+```
+stream1.pipe(stream2)
+```
+
+检视endpoint的时候，打印endpoint._connection._events 无意中发现了Pipe让stream那么牛逼的秘密。
+
+```
+{
+  readable: [Function: pipeOnReadable],
+  unpipe: [Function: onunpipe],
+  drain: [Function],
+  error: [ [Function: onerror], [Function] ],
+  close: { [Function: g] listener: [Function: onclose] },
+  finish: { [Function: g] listener: [Function: onfinish] },
+}
+```
+
+原来这样做后，会截取若干事件，并在事件函数内写了不少逻辑。
+
+挖个坑，空了再填。
+
+	var Writable = require('stream').Writable;
+	var ws = Writable();
+	ws._write = function (chunk, enc, next) {
+	    console.dir(chunk);
+	    next();
+	};
+
+	process.stdin.pipe(ws);
+
+
+
+		var Readable = require('stream').Readable;
+	var rs = Readable();
+
+	var c = 97;
+	rs._read = function () {
+	    rs.push(String.fromCharCode(c++));
+	    if (c > 'z'.charCodeAt(0)) rs.push(null);
+	};
+
+	rs.pipe(process.stdout);
