@@ -1,6 +1,47 @@
 stream-handbook的极简中文版本
 ===============
 
+
+// 11111
+// process.stdin.resume()
+// console.log(require("util").inspect(Object.keys(process.stdin._events)))
+// process.stdin.pipe(process.stdout)
+// console.log("----------------")
+// console.log(require("util").inspect(Object.keys(process.stdin._events)))
+// console.log("OK.")
+
+// console.log(process.stdin._events.data.toString())
+
+// 2222
+
+// process.stdin.resume()
+// process.stdin.on("data",function ondata(chunk) {
+//     process.stdout.write(chunk);
+// })
+// console.log("OK.")
+
+// process.nextTick(function(){
+//  while
+// })
+// setTimeout(function() {
+//   console.log('hello world!');
+// }, 5000);
+// console.log("ok")
+//只有调用resume，就会一直等输入，不退出，除非你给一个sigint .当然只要有一个异步代码没有执行完，node都不会退出，哪怕最后一行代码执行完也只是静态意义上的。
+
+process.stdin.resume()
+// 很有气质的代码。一个是pipe是做了一个事件链接，就是告诉stdin如果有数据就通知下，并在通知的callback内埋入代码，转发这些数据的到目的流。可以通过
+// console.log(process.stdin._events.data.toString()) 获得代码。
+// 看了代码就知道，用
+
+// process.stdin.on("data",function ondata(chunk) {
+//     process.stdout.write(chunk);
+// })
+
+// 替代是可以演示效果的，尽管缺乏错误处理。另外drain 这个词是排水的意思，就是说如果写错了，是dest需要排水（满了），而src需要await，和pipe（管道）一次遥相呼应。
+// node很喜欢这样的插入代码（事件）到别人的对象内，对封装的概念被无视，感觉不舒服。大脑混入异物。但是，它也因此变得更加声明话，而不是命令化的模式了。
+
+
 在unix中，我们可以使用`|`符号来实现流，从而可以让很多小程序可以协作。node内建stream模块也借助这个概念。流模块的基本操作符叫做`.pipe()`。
 
 #为什么用流?
