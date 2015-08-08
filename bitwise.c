@@ -15,10 +15,10 @@ const char *byte_to_binary(int x)
 
     return b;
 }
-void file1(){
+void file1(char *file){
     const int len = 10;
     FILE *fp;
-    fp=fopen("./bitwise.c", "r+");
+    fp=fopen(file, "r+");
     
     for(int i=0;i<len;i++){
         unsigned char x ;
@@ -87,7 +87,7 @@ void file2(){
     fwrite(x, len, len, fp);
     fclose(fp);
 }
-int main(void)
+int main(int argc, char **argv)
 {
     // {
     //     char *tmp;
@@ -98,6 +98,13 @@ int main(void)
     //     printf("%s\n", byte_to_binary(5));
     //     printf("%s\n", byte_to_binary(~5));
     // }
-    file1();
+    if (argc <=1){
+        printf("error :must have one argument\n");   
+        return 1; 
+    }
+    // printf("%s\n", argv[1] );
+    file1(argv[1]);
     return 0;
 }
+
+// ./a.out ./bitwise.c
