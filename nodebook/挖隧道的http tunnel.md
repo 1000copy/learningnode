@@ -117,12 +117,12 @@ desproxy命令的用法：
 
 这一做法，最大的好处是ssh的数据连接是加密的。
 
+
 改编自
 
 1. HTTP代理原理以及HTTP隧道技术_丁蟹_新浪博客 - http://blog.sina.com.cn/s/blog_9db44b83010180k2.html
 2. HTTP Tunnel的应用实例 - 老兔 - 博客园 - http://www.cnblogs.com/wengzhiwen/archive/2009/08/26/http_tunnel.html
-Database Everywhere @ ShenJS by Evan You - http://slides.com/evanyou/shenjs#/
-改编自： HTTP Tunnel使用的几种使用（经典） - - ITeye技术网站 - http://zhangqi007.iteye.com/blog/1838103
-改编自：Http隧道(tunnel)技术与Proxy – Legend(谭海燕)的专栏 - http://www.fenesky.com/blog/2014/07/25/how-http-tunnel-works.html
+3. HTTP Tunnel使用的几种使用（经典） - - ITeye技术网站 - http://zhangqi007.iteye.com/blog/1838103
+3.Http隧道(tunnel)技术与Proxy – Legend(谭海燕)的专栏 - http://www.fenesky.com/blog/2014/07/25/how-http-tunnel-works.html
 
 
