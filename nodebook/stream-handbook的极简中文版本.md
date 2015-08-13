@@ -1,6 +1,54 @@
 stream-handbook的极简中文版本
 ===============
 
+对于一个ReadableStream ,响应的就有一个read消耗太慢，而生产太快的问题，我想这就是resume,pause存在的缘由吧。
+
+对应于WriteableStream 的write可能返回false——readableStream.push 可能失败(返回false）。
+
+  readable.push(chunk[, encoding])#
+
+  chunk Buffer | null | String Chunk of data to push into the read queue
+  encoding String Encoding of String chunks. Must be a valid Buffer encoding, such as 'utf8' or 'ascii'
+  return Boolean Whether or not more pushes should be performed
+
+
+2015年08月13日  理解如下概念，cork,uncork,write,highwatermark,_write,write,drain，只要看如下代码即可。
+cork上之后，不停的写，write，write很多次，然后buffer就满了。write就会返回false。
+这就是写入的速度快于消耗的速度时的代码处理的效果模拟。
+
+stream.write 可能返回false，这说明buffer满了，消耗的太慢了。要等待drain（排水完毕）之后才可以继续写。
+
+
+  var Writable = require('stream').Writable;
+  //default highWaterMark is 16K
+  var ws = Writable({highWaterMark:1000});
+  ws.cork()
+  var i = 0
+  var chunks = []
+  ws._write = function (chunk, enc, next) {
+      // console.dir(chunk);
+      // console.log(chunk.length)
+      i++
+      chunks.push(chunk)
+      next();
+  };
+
+  // process.stdin.pipe(ws);
+  write1000()
+  function write1000(){
+    for (var i=0;i<200;i++)
+      if (false === ws.write("0123456789"))
+        {
+          // console.log(ws.highWaterMark)
+          console.log(i)
+          ws.on('drain',function(){
+            console.log("drain")
+          })
+          ws.uncork()
+          // break ;
+        }
+  }
+
 
 // 11111
 // process.stdin.resume()
