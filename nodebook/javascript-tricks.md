@@ -1,3 +1,28 @@
+# 如何测试验证某个回调函数被调用过（几次）?
+
+  function caller(callback){
+    callback(1)
+  }
+
+  caller(mustCall(function a(v){
+    assert.ok(1,v)
+  }),1)
+  如果function a没有调用，或者次数不符合，那么在进程退出前会报一个assert错误
+  // mustCall
+  function mustCall(f, times) {
+    var actual = 0;
+
+    process.setMaxListeners(256);
+    process.on('exit', function() {
+      assert.equal(actual, times || 1);
+    });
+
+    return function() {
+      actual++;
+      return f.apply(this, Array.prototype.slice.call(arguments));
+    };
+  }
+
 # 一种对象创建方法
 
 function Foo() {
