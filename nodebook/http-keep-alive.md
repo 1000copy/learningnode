@@ -110,4 +110,76 @@
 一点也不朦胧的keep-alive终于搞清楚了。
 
 
-    
+ref:
+
+http://my.oschina.net/flashsword/blog/80037
+http://stackoverflow.com/questions/20592698/keep-alive-header-clarification
+
+
+
+
+ was asked to build a site , and one of the co-developer told me That I would need to include the keep-alive header.
+
+Well I read alot about it and still I have questions.
+
+msdn ->
+
+The open connection improves performance when a client makes multiple requests for Web page content, because the server can return the content for each request more quickly. Otherwise, the server has to open a new connection for every request
+Looking at
+
+
+
+When The IIS (F) sends keep alive header (or user sends keep-alive) , does it mean that (E,C,B) save a connection which is only for my session ?
+Where does this info is kept ( "this connection belongs to "Royi") ?
+Does it mean that no one else can use that connection
+If so - does it mean that keep alive-header - reduce the number of overlapped connection users ?
+if so , for how long does the connection is saved to me ? (in other words , if I set keep alive- "keep" till when?)
+p.s. for those who interested :
+
+clicking this sample page will return keep alive header
+
+Where is this info kept ("this connection is between computer A and server F")?
+A TCP connection is recognized by source IP and port and destination IP and port. Your OS, all intermediate routers and proxies and the server's OS will recognize the connection by this.
+
+HTTP works with request-response: client connects to server, performs a request and gets a response. Normally, the connection to an HTTP server is closed after each response. With HTTP keep-alive you keep the underlying TCP connection open until certain criteria are met.
+
+This allows for multiple request-response pairs over a single TCP connection, eliminating some of TCP's relatively slow connection startup.
+
+When The IIS (F) sends keep alive header (or user sends keep-alive) , does it mean that (E,C,B) save a connection
+So, yes, as long as server and browser understand and implement the keep-alive header properly.
+
+which is only for my session ?
+What?
+
+Does it mean that no one else can use that connection
+That is the intention of TCP connections: it is an end-to-end connection intented for only those two parties.
+
+If so - does it mean that keep alive-header - reduce the number of overlapped connection users ?
+Define "overlapped connections". See HTTP persistent connection for some advantages and disadvantages, such as:
+
+Lower CPU and memory usage (because fewer connections are open simultaneously).
+Enables HTTP pipelining of requests and responses.
+Reduced network congestion (fewer TCP connections).
+Reduced latency in subsequent requests (no handshaking).
+if so , for how long does the connection is saved to me ? (in other words , if I set keep alive- "keep" till when?)
+An typical keep-alive response looks like this:
+
+Keep-Alive: timeout=15, max=100
+See Hypertext Transfer Protocol (HTTP) Keep-Alive Header for example (a draft for HTTP/2 where the keep-alive header is explained in greater detail than both 2616 and 2086):
+
+A host sets the value of the timeout parameter to the time that the host will allows an idle connection to remain open before it is closed. A connection is idle if no data is sent or received by a host.
+
+The max parameter indicates the maximum number of requests that a client will make, or that a server will allow to be made on the persistent connection. Once the specified number of requests and responses have been sent, the host that included the parameter could close the connection.
+
+However, the server is free to close the connection after an arbitrary time or number of requests (just as long as it returns the response to the current request). How this is implemented depends on your HTTP server.
+
+Define "overlapped connections" ----> I mean simultaneously. ( and I think the number of simultaneous connection will be reduced because as you said : "connection X is reserved for John cause it uses keep-alive header."....am I right ? –  Royi Namir Dec 27 '13 at 11:23
+      
+Yes, that's correct, a client will make less simultaneous connections when using keep-alive, it will fire the requests in serial, not parallell. :) –  CodeCaster Dec 27 '13 at 11:24 
+      
+So what you're saying is that if the server can handle 100 connections at a time , and all those connections uses keep-alive , then the 101'st connection will be dumped ??? –  Royi Namir Dec 27 '13 at 11:25
+1   
+Thank you. I'll be able to provide the bounty in 10 hours. ( when SO let me) –  Royi Namir Dec 27 '13 at 19:51
+1   
+End of questions. thank you. (p.s. it will be slower cuz serial is slower...) –  Royi Namir Dec 27 '13 at 20:03
+
