@@ -1,3 +1,12 @@
+#mac How should I properly exit Terminal using a Terminal command on Mac OS X
+
+in Terminal.app
+
+Preferences > Settings > Shell
+
+on 'When the shell exits' chosen 'Close the window'
+
+
 # 如何测试验证某个回调函数被调用过（几次）?
 
   function caller(callback){
