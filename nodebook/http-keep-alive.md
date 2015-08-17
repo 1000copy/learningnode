@@ -33,7 +33,8 @@
        req.end()
             
      }
-我希望对path2的请求可以重用path1的。当然，我招到了可耻的失败。在http server内的打印内容表明，不但客户端端口不同，而且连接req.headers.connection也是close,而不是keep-alive 。
+
+然而，高冷的keep-alive 这样的特性，当然不是我用传统的傻小子方法就可以追到的。是的，我希望对path2的请求可以重用path1的。结果是我遭到了必然的、可耻的、失败。在http server内的打印内容表明，不但客户端端口不同，而且连接req.headers.connection也是close,而不是keep-alive 。
 
 在仔细查询了Node的测试用例test-keep-alive.js 我写了这个测试程序的第二版：
 
@@ -50,7 +51,6 @@
       maxSockets: 5,
       maxFreeSockets: 5,
     });
-    // var clientport = undefined
     
     function get(path, callback) {
       return agent.get({
@@ -69,7 +69,6 @@
     
     
     function visit(path,then) {
-      // request second, use the same socket
       get(path, function (res) {
         assert.equal(res.statusCode, 200);
         // 必须有callback消费data。否则end无法emit
