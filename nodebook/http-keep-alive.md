@@ -1,3 +1,7 @@
+The impact of not having persistent connections is a major increase in loading time of resources. With keep-alive, a single TCP connection can be used to request multiple resources; without, a new TCP session (with a new three-way handshake - and, if you use SSL, a new SSL negotiation) is required for each and every resource on the page.
+
+In practical terms, the impact will depend on the number of resources on a page, the round-trip time between client and server, and the number of concurrent requests a client's browser is making at a time (modern browsers run ~6ish by default). Lots of resources per page and distant clients will mean a very noticeable increase in page load times.
+
 各种文档都指向说明http 的 keepalive 可以作为一个性能优化特性：保持连接并用于后续的请求重用。也有一些优美的图形说明。一种朦朦胧胧的美感：）
 
 
