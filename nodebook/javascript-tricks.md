@@ -1,3 +1,8 @@
+# 只看8888端口的tcp 链接、
+
+  netstat -na |findstr   "8888"
+
+
 # 如何测试验证某个回调函数被调用过（几次）?
 
   function caller(callback){
