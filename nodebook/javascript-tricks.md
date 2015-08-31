@@ -1,6 +1,106 @@
+<<<<<<< HEAD
 # 只看8888端口的tcp 链接、
 
   netstat -na |findstr   "8888"
+=======
+#this 的特性
+
+    var util = require("util")
+    var EE = require("events").EventEmitter
+    function Item(){
+      EE.call(this)
+    }
+    util.inherits(Item,EE)
+    Item.prototype.dosth = function() {
+      var  a= 1
+      this.emit("data",a)
+    };
+    function Container(){
+      this.item = new Item()
+      this.item.on("data",this.handler)
+      //this.item.on("data",this.handler.bind(this))
+      this.item.dosth()
+    }
+    Container.prototype.handler = function(data) {
+      console.log(this.constructor.name)
+      this.memeber = data
+    };
+
+    var c = new Container()
+    console.log(c.memeber)
+    //undefined
+
+#  trouble shooting for js Inheritance 
+
+code sample:
+
+    var util = require("util")
+    function Base(){}
+    function Top(){Base.call(this)}
+
+    Top.prototype.foo = function(first_argument) {
+    };
+    util.inherits(Top,Base)
+
+    var t = new Top()
+    t.foo()
+    return 
+每一段代码都很熟悉。因为解决不了，于是特么又都变得陌生。why error occurs ?
+
+    t.foo()
+        ^
+      TypeError: Object #<Top> has no method 'foo
+
+原来 util.inherits(Top,Base) 必须放到prototype声明前。懂得这样的前提是，你得知道util.inherits内部干了什么活。
+
+#
+
+
+# what is halfopen state in tcp?
+
+当一端调用end，这一段就不在可以写，但是可以继续读。这就是halfopen。
+ref: node test/simple/net-socket-readystate.js
+
+  var common = require('../common');
+  var net = require('net');
+  var assert = require('assert');
+
+  var sock = new net.Socket();
+
+  var server = net.createServer().listen(common.PORT, function() {
+    assert(!sock.readable);
+    assert(!sock.writable);
+    assert.equal(sock.readyState, 'closed');
+
+    sock.connect(common.PORT, function() {
+      assert.equal(sock.readable, true);
+      assert.equal(sock.writable, true);
+      assert.equal(sock.readyState, 'open');
+
+      sock.end();
+      assert(!sock.writable);
+      assert.equal(sock.readyState, 'readOnly');
+
+      server.close();
+      sock.on('close', function() {
+        assert(!sock.readable);
+        assert(!sock.writable);
+        assert.equal(sock.readyState, 'closed');
+      });
+    });
+
+    assert.equal(sock.readyState, 'opening');
+  });
+
+
+#mac How should I properly exit Terminal using a Terminal command on Mac OS X
+
+in Terminal.app
+
+Preferences > Settings > Shell
+
+on 'When the shell exits' chosen 'Close the window'
+>>>>>>> origin/master
 
 
 # 如何测试验证某个回调函数被调用过（几次）?
