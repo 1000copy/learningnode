@@ -23,17 +23,17 @@
 
 它没有乱说。我要的几个广播包，硬硬的都在：
 
-  tcpdump: data link type PKTAP
-    tcpdump: listening on pktap, link-type PKTAP (Packet Tap), 
-    ...
-    20:01:13.663746 IP (tos 0x0, ttl 64, id 13617, offset 0, flags [none], proto UDP (17), length 148)
-        192.168.2.115.2425 > 255.255.255.255.2425: [udp sum ok] UDP, length 120
-    	0x0000:  ffff ffff ffff 3848 4cba b393 0800 4500  ......8HL.....E.
-    	0x0010:  0094 3531 0000 4011 820d c0a8 0273 ffff  ..51..@......s..
-    	0x0020:  ffff 0979 0979 0080 9330 313a 3134 3431  ...y.y...01:1441
-    	0x0030:  3139 3532 3734 3a6d 6f62 696c 653a 6c63  195274:mobile:lc
-    	0x0040:  6a69 5068 6f6e 652e 6c6f 6361 6c3a 3138  jiPhone.local:18
-    	...
+		tcpdump: data link type PKTAP
+		tcpdump: listening on pktap, link-type PKTAP (Packet Tap), 
+		...
+		20:01:13.663746 IP (tos 0x0, ttl 64, id 13617, offset 0, flags [none], proto UDP (17), length 148)
+		    192.168.2.115.2425 > 255.255.255.255.2425: [udp sum ok] UDP, length 120
+			0x0000:  ffff ffff ffff 3848 4cba b393 0800 4500  ......8HL.....E.
+			0x0010:  0094 3531 0000 4011 820d c0a8 0273 ffff  ..51..@......s..
+			0x0020:  ffff 0979 0979 0080 9330 313a 3134 3431  ...y.y...01:1441
+			0x0030:  3139 3532 3734 3a6d 6f62 696c 653a 6c63  195274:mobile:lc
+			0x0040:  6a69 5068 6f6e 652e 6c6f 6361 6c3a 3138  jiPhone.local:18
+			...
 想过是不是本身代码不灵，但是netcat试过了，说明是一般的消息还是玩得转的。
 
 		$nc -u 192.168.2.112  2425
