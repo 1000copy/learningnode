@@ -1,8 +1,7 @@
-<<<<<<< HEAD
+
 # 只看8888端口的tcp 链接、
 
   netstat -na |findstr   "8888"
-=======
 #this 的特性
 
     var util = require("util")
