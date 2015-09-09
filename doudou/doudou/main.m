@@ -218,9 +218,12 @@
     
 }
 -(void)test8{
-    NSString str = @"a 阿啊\nai 碍呆唉挨矮哀爱";
-    
-    NSLog(@"is:%@",@"");
+//    NSString *str = @"a 阿啊\nai 碍呆唉挨矮哀爱";
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+    dic[@"a"]=@"阿啊";
+    dic[@"ai"]=@"碍呆唉挨矮哀爱";
+    NSLog(@"is:%@",dic[@"ai"]);
+    NSLog(@"is:%@",dic[@"b"]?@"HASVALUE":@"EMPTY");
 }
 
 @end
@@ -234,7 +237,7 @@ int main(int argc, const char * argv[]) {
         // Dic
         DicTest * d = [[DicTest alloc]init];
 //        [d test];
-        [d test7];
+        [d test8];
     }
     return 0;
 }
