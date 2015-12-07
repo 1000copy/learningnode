@@ -77,3 +77,10 @@ Restful App 的方案的好处是看得到的：
 2. 而且把操作从URL中分离出来，避免混乱和不一致
 
 这样的做法，经过一个著名框架（Ruby on Rails)的首倡，目前得到了很多框架的附和。
+
+尽管Web Form本身没有提供PUT,DELETE方法，但是可以通过Form隐含字段来细分POST为 PUT,POST,DELETE
+
+<form method="post" ...>
+  <input type="hidden" name="_method" value="put/post/delete" />
+  ...
+
