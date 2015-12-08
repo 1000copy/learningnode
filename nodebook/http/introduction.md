@@ -15,7 +15,7 @@ Accept-Language: en-us
 Accept-Encoding: gzip, deflate
 Connection: Keep-Alive
 ```
-接到这个请求消息，解析后知道，客户端想要根目录下的hello.htm 资源文件（以及更多的信息，比如它接受美国英语（Accept-Language: en-us）等），服务器软件则找到此资源，给出响应：
+接到这个请求消息，解析第一行可以知道，客户端发了了一个GET请求，想要根目录下的hello.htm 资源，协议版本为1.1。服务器还可以根据第二行到空行之间的被称为首部字段信息中，得到更多客户端信息，比如看到Accept-Language: en-us，表明用户代理接受美国英语的内容。服务器软件则找到此资源，给出响应：
 ```
 HTTP/1.1 200 OK
 Date: Mon, 27 Jul 2009 12:28:53 GMT
@@ -33,57 +33,48 @@ Connection: Closed
    </body>
 </html>
 ```
-浏览器接收完毕后，解析内容，根据制定长度（Content-Length: 88）解析出文件内容
-```
-<html>
-   <body>
-
-   <h1>Hello, World!</h1>
-
-   </body>
-</html>
-```
-显示此html给用户，并且关闭连接（Connection: Closed）。
+浏览器接收完毕后，解析首行，知道协议版本为1.1，看到状态码为200，知道这个请求是成功的。然后从第二行解析到空行，得到更多的消息元数据，比如看到Content-Type: text/html，知道主体内承载的是一个html文件，从内容Content-Length: 88知道内容长度。然后解析出实体内的html文件内容，并呈现html给用户。并且根据Connection: Closed的首部字段指示，做出关闭连接的操作。
 
 
 #请求消息
 
 通用的目的下，一个请求消息是这样构成的
 
-##一个请求行
-
-正如GET /hello.htm HTTP/1.1，指明使用的方法（http method，随后介绍）),资源名称，和HTTP 版本。
-##零行或者多行头字段，跟着一个CRLF。案例中的
-```
-User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
-Host: example.com
-Accept-Language: en-us
-Accept-Encoding: gzip, deflate
-Connection: Keep-Alive
-```
-都被称为头字段。
-##一个空行（CRLF)。指示头字段完成
-##可选的消息主体。
+- 一个请求行。请求消息的第一行就是请求行。它指明使用的请求方法、资源标示符、和HTTP 版本。
+- 首部字段。
+零行或者多行头字段，跟着一个CRLF。案例中的
+    ```
+    User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+    Host: example.com
+    Accept-Language: en-us
+    Accept-Encoding: gzip, deflate
+    Connection: Keep-Alive
+    ```
+都被称为首部字段。头字段由冒号分隔为两部分，左边的被称为头字段名，右边的是头字段值。比如Host: example.com，说明头字段Host的值为example.com。头字段的可选值构成一个超长的列表，它们的值也各有不同
+- 一个空行（CRLF)。
+指示头字段完成
+- 可选的消息主体。
 本案例是没有主体的。
 
-头字段由冒号分隔为两部分，左边的被称为头字段名，右边的是头字段值。比如Host: example.com，说明头字段Host的值为example.com。头字段会有一个常常的列表，它们的值也各有不同，随后会给出详细解释和案例。
-
-请求方法（Request Method）可以有我们已知的GET ,以及POST,HEAD,PUT,DELETE,CONNECT,OPTIONS,TRACE。
+请求方法（Request Method）可以我们已经看到案例的GET ,以及POST,HEAD,PUT,DELETE,CONNECT,OPTIONS,TRACE。
 
 GET 表示我要请求一个指定名称的资源。
 POST表示我要更新一个资源，资源的新数据由消息主题提供。
 PUT表示我要创建一个指定名称的资源，资源的新数据由消息主题提供。
 DELETE表示我要删除一个指定名称的资源。
 
+CONNECT,OPTIONS,TRACE会在后面单独讲解。
+
 因为方法是最关键的请求消息字段，所以，直接按照请求方法对请求消息做出归类是非常方便的。这样的话，使用GET方法的消息，直接简化为GET请求；相应的，自然还有POST请求，PUT请求，DELETE请求。等等。
 
 #响应消息
+
 构成如下：
 
- ##一个状态行。
+- 一个状态行。
  由http版本，状态码和状态描述文字构成。如HTTP/1.1 200 OK。状态码200表示成功。
- ##一个空行（CRLF)。指示头字段完成。
- 本案例中这些行都是头字段
+- 一个空行（CRLF)。
+指示头字段完成。本案例中这些行都是头字段
  ```
  Date: Mon, 27 Jul 2009 12:28:53 GMT
 Server: Apache/2.2.14 (Win32)
@@ -92,9 +83,10 @@ Content-Length: 88
 Content-Type: text/html
 Connection: Closed
 ```
-##可选的消息主体。案例中就是一个hello.htm文件的内容
+- 可选的消息主体。
+案例中就是一个hello.htm文件的内容
  
-状态码共有5组，分别是 100-199，200-299，300-399，400-499，500-599的范围。案例中的200就在200-299段，我们称之为200系列，它是最常用的一个系列。
+状态码共有5组，分别是 100-199，200-299，300-399，400-499，500-599的范围。
 
 - 200-299 成功。
 指明客户端请求是正确的，并被成功执行。
