@@ -3,28 +3,28 @@ http method connect + http tunnel
 假设当前已经建立HTTP连接。现在要传递敏感信息（比如登录密码），要求转到ssl，如何做到？
 
 如果只有客户端和服务器（没有HTTP代理服务器），可以使用Connection头字段来表达客户端要升级的请求：
-
-      GET http://example.bank.com/acct_stat.html?749394889300 HTTP/1.1
-       Host: example.bank.com
-       Upgrade: TLS/1.0
-       Connection: Upgrade
-
+```
+GET http://example.bank.com/acct_stat.html?749394889300 HTTP/1.1
+Host: example.bank.com
+Upgrade: TLS/1.0
+Connection: Upgrade
+```
 这样服务器接收到此消息即可发送
-
-       HTTP/1.1 101 Switching Protocols
-       Upgrade: TLS/1.0, HTTP/1.1
-       Connection: Upgrade
-
+```
+HTTP/1.1 101 Switching Protocols
+Upgrade: TLS/1.0, HTTP/1.1
+Connection: Upgrade
+```
 表示确认。一次握手后，双方认可，这个http连接之后就可以发送SSL流量了。
 
 如果中间有HTTP代理的话，情况就不同了。因为我们使用的Connection头字段是hop-by-hop（逐跳）的，这个头字段会被代理服务器认为是在客户端到代理服务器之间的协议升级。于是，代理升级连接协议，解析并删除此字段后继续转到服务器，于是服务器是收不到这个首部的。此时，可以采用Connect方法。   客户端使用如下消息，通知代理服务器，去做一个连接到指定的服务器地址和端口:
-
+```
 CONNECT example.com 443 HTTP/1.1
-
+```
 代理服务器随后提取CONNECT 方法指定的地址和端口（这里是 example.com 443 ），建立连接，成功后随后通知客户端，需要的连接建立完毕：
-
+```
 HTTP/1.1 OK 
-
+```
 之后，代理服务器简单的转发客户端的消息到服务器，以及转发服务器来的消息给客户端。因为它只是转发，它就变成了一个通道，或者叫做透明代理、盲中继。因为一般的http 代理不是仅仅转发，还需要解析头字段、考虑是否缓存、添加Via头字段等工作。
 
 升级到tls只能有客户端发起。如果服务器希望升级，可以通过状态码426 upgrade required 告知客户端。
@@ -43,7 +43,7 @@ HTTP隧道使用普通的请求方法POST, GET, PUT 和DELETE来实现。HTTP隧
 所以理解Connect方法，需要对比和区分以下内容：
 
 1.  Http 可以通过Connection：upgrade的方法升级到TLS。仅仅使用于无代理服务器的情况。
-2. Connect 方法是 http upgrade tls 的一个替代。针对有代理的情况
+2.  Connect 方法是 http upgrade tls 的一个替代。针对有代理的情况
 3.  Connect 方法成功返回后，中间的http代理变成了透明的代理：不在使用HTTP协议解析数据包和修改数据包，而是简单的转发流量。
 
 这样就清晰了。
