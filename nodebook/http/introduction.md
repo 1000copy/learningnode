@@ -21,7 +21,7 @@ Accept-Encoding: gzip, deflate
 Connection: Keep-Alive
 ```
 接到这个请求消息，解析后知道，客户端想要根目录下的hello.htm 资源文件（以及更多的信息，比如它接受美国英语（Accept-Language: en-us）等），服务器软件则找到此资源，给出响应：
-
+```
 HTTP/1.1 200 OK
 Date: Mon, 27 Jul 2009 12:28:53 GMT
 Server: Apache/2.2.14 (Win32)
@@ -37,9 +37,9 @@ Connection: Closed
 
    </body>
 </html>
-
+```
 浏览器接收完毕后，解析内容，根据制定长度（Content-Length: 88）解析出文件内容
-
+```
 <html>
    <body>
 
@@ -47,7 +47,7 @@ Connection: Closed
 
    </body>
 </html>
-
+```
 显示此html给用户，并且关闭连接（Connection: Closed）。
 
 
@@ -56,13 +56,16 @@ Connection: Closed
 通用的目的下，一个请求消息是这样构成的
 
 ##一个请求行
+
 正如GET /hello.htm HTTP/1.1，指明使用的方法（http method，随后介绍）),资源名称，和HTTP 版本。
 ##零行或者多行头字段，跟着一个CRLF。案例中的
+```
 User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
 Host: example.com
 Accept-Language: en-us
 Accept-Encoding: gzip, deflate
 Connection: Keep-Alive
+```
 都被称为头字段。
 ##一个空行（CRLF)。指示头字段完成
 ##可选的消息主体。
@@ -86,21 +89,23 @@ DELETE表示我要删除一个指定名称的资源。
  由http版本，状态码和状态描述文字构成。如HTTP/1.1 200 OK。状态码200表示成功。
  ##一个空行（CRLF)。指示头字段完成。
  本案例中这些行都是头字段
+ ```
  Date: Mon, 27 Jul 2009 12:28:53 GMT
 Server: Apache/2.2.14 (Win32)
 Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
 Content-Length: 88
 Content-Type: text/html
 Connection: Closed
+```
 ##可选的消息主体。案例中就是一个hello.htm文件的内容
  
 状态码共有5组，分别是 100-199，200-299，300-399，400-499，500-599的范围。案例中的200就在200-299段，我们称之为200系列，它是最常用的一个系列。
 
-200-299 成功。指明客户端请求是正确的，并被成功执行。
-300-399  重定向。指明客户端请求是正确的，不过当前请求资源的位置在别处，请再次定向你的资源位置，发起新的请求
-400-499 客户端错误。指明客户端的请求是不正确的，可能是格式无法识别，或者URL太长等等。
-500-599 服务器端错误。指明客户端的请求正确，但是服务器因为自身原因无法完成请求。
-100-199 信息提示。这个系列的状态码只有2个，但是比较费解。会专门做出解释。
+# 200-299 成功。指明客户端请求是正确的，并被成功执行。
+# 300-399  重定向。指明客户端请求是正确的，不过当前请求资源的位置在别处，请再次定向你的资源位置，发起新的请求
+# 400-499 客户端错误。指明客户端的请求是不正确的，可能是格式无法识别，或者URL太长等等。
+# 500-599 服务器端错误。指明客户端的请求正确，但是服务器因为自身原因无法完成请求。
+# 100-199 信息提示。这个系列的状态码只有2个，但是比较费解。会专门做出解释。
 
 因为状态码是最关键的响应消息字段，选择不同的状态码常常意味着不同的首部字段和主体，所以，直接按照状态码对响应消息做出归类是非常方便的。这样的话，状态码为100系列的响应消息，就可以简化为100型响应。相应的，自然还有200型响应,300型响应，400型响应，500型响应。
 
@@ -117,6 +122,7 @@ Connection: Closed
 2. 使用nc对node http 服务器的资源发起原始（raw）GET请求，查看原始（raw）响应
 
 服务器代码：
+```
 var express = require('express');
 var app = express();
 app.get('/', function (req, res) {
@@ -128,9 +134,11 @@ var server = app.listen(3000, function () {
 
   console.log('Example app listening at http://%s:%s', host, port);
 });
+```
+
 执行node app.js
 nc 输入请求，查看响应
-
+```
 $ nc localhost 3000
 GET /
 
@@ -141,9 +149,9 @@ Content-Length: 80
 ETag: W/"50-41mmSLl6PW+Zt5VLKLE2/Q"
 Date: Thu, 03 Dec 2015 08:54:23 GMT
 Connection: close
-
+```
 查看 1.0 的http响应
-
+```
 $ nc localhost 3000
 GET / HTTP/1.0
 
@@ -156,3 +164,4 @@ Date: Thu, 03 Dec 2015 08:52:45 GMT
 Connection: close
 
 <a href="/test204">204</a> <a href="/test205">205</a> <a href="/test300">300</a>
+```
