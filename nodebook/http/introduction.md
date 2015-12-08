@@ -75,8 +75,8 @@ CONNECT,OPTIONS,TRACE会在后面单独讲解。
  由http版本，状态码和状态描述文字构成。如HTTP/1.1 200 OK。状态码200表示成功。
 - 一个空行（CRLF)。
 指示头字段完成。本案例中这些行都是头字段
- ```
- Date: Mon, 27 Jul 2009 12:28:53 GMT
+```
+Date: Mon, 27 Jul 2009 12:28:53 GMT
 Server: Apache/2.2.14 (Win32)
 Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
 Content-Length: 88
