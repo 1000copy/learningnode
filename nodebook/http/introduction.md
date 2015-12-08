@@ -1,6 +1,6 @@
 #引入
 
-如果我们知道一个站点（example.com)的根目录有一个hello.htm 的页面，那么我可以通过打开一个浏览器，输入url（http://example.com/hello.htm),等待一些时间，就可以看到一个html页面呈现在我的浏览器内。
+如果我们知道一个站点（example.com)的根目录有一个hello.htm 的页面，那么我可以通过打开一个浏览器，输入url（http://example.com/hello.htm）,等待一些时间，就可以看到一个html页面呈现在我的浏览器内。
 
 当我们需要再进一步，我们会需要弄明白一件事：在浏览器内输入URL并按回车后，浏览器到底和服务器有怎么样的交互时，我们就需要学习HTTP协议了。正是这个协议，把客户端的请求打包为HTTP请求消息，发送给服务器，也是由这个协议把一个响应打包成HTTP响应消息，送回客户端。
 
@@ -12,14 +12,14 @@
 具体过程是这样的：
 
 客户端软件打开服务器的连接，发送
-
+```
 GET /hello.htm HTTP/1.1
 User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
 Host: example.com
 Accept-Language: en-us
 Accept-Encoding: gzip, deflate
 Connection: Keep-Alive
-
+```
 接到这个请求消息，解析后知道，客户端想要根目录下的hello.htm 资源文件（以及更多的信息，比如它接受美国英语（Accept-Language: en-us）等），服务器软件则找到此资源，给出响应：
 
 HTTP/1.1 200 OK
