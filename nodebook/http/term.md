@@ -1,5 +1,10 @@
 术语：
 
+为了更好的讨论问题，我们引入一系列的相关概念：
+
+#客户端：在这里，浏览器就是我们的一个客户端，它代表客户发起资源请求。
+#服务器：在这里，后台提供服务的软件，我们称之为服务器。它只能接受客户端请求并给出响应消息，而不能发起请求到客户端。
+
 #资源（resource）
 
 Web 资源是使用URL指向的Web内容。
@@ -18,13 +23,25 @@ image/jpeg :JPEG版本的图片
 
 非常多的资源类型和文本标记的对应关系，一起构成了一个超长的清单，并且由RFC 2045标准化。此标准被称为MIME。MIME是Multipurpose Internet Mail Extension的缩写。虽然名称很长，但是含义简单，就是用来指定消息内的实体类型的。之所以有Mail字样，是因为最初设计是为了Mail的异构系统交换文档的。
 
-#资源标示 
+#资源标示符
 
 URL是一种资源位置标示方法。URL描述了一个资源在服务器上的位置。这就是一个合法的URL：http://example.com/part/index.htm
 
 1. 第一部分：方案(scheme)。指明了访问资源所使用的协议类型。这部分通常是HTTP协议(http://)。
 2. 第二部分：服务器地址(比如，example.com）。
 3. 其余部分指定了Web服务器上的某个资源(比如，/part/index.htm)。
+
+URL 是 Uniform Resource Locator （统一资源定位符），用来指向互联网的一个资源。
+一个典型的URL ：http://www.example.com/index.html, 指示了协议 (http), 一个主机名(www.example.com), 和一个资源名 (index.html)。
+
+当在地址栏输入此资源名并回车后，用户代理会把URL解析，把必要的信息以HTTP协议的要求，打入请求消息内。以http://www.example.com/index.html，变成
+
+GET index.html HTTP/1.1
+host:www.example.com
+CRLF
+
+打开到www.example.com的tcp连接，并发送此请求消息给服务器，然后等待服务器响应并解析显示给用户。
+
 
 #HTTP事务 
 
