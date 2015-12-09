@@ -39,7 +39,7 @@ OCTET 就是八位字节。所有 *OCTET标示多个字节。
 ```
 HTTP/1.1 200 OK
 Date: Mon, 27 Jul 2009 12:28:53 GMT
-Server: Apache/2.2.14 (Win32)
+Server: express
 Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
 Content-Length: 88
 Content-Type: text/html
@@ -72,7 +72,7 @@ Content-Type可以是丰富多彩的静态文件，也可以是一些在文件�
 ```
 HTTP/1.1 200 OK
 Transfer-Encoding: chunked
-Server: Apache/3.0
+Server: express
 
 5
 hello
