@@ -103,26 +103,15 @@ Last-Modified: Thu, 04 Dec 2015 09:54:01 GMT
 Connection: close
 ```
 
-##验证：局部获取(有待实现服务器 http://www.codeproject.com/Articles/813480/HTTP-Partial-Content-In-Node-js)
+##验证：局部获取(partial GET)
 
-假设我们有一个文本文件，叫做hello.txt 内容就是"hello world"。我们可以使用curl 发起一个局部获取。
+录入以下命令，查看结果。
+```
+cd code
+node partial-get.js
 
-~# curl -s -D - -H "Range: bytes=1-2, 6-" http://www.example.com
-HTTP/1.1 206 Partial Content
-Accept-Ranges: bytes
-Content-Type: multipart/byteranges; boundary=3d6b6a416f9b5
-Content-Length: 385
-Server: express
+$nc localhost 8000
+GET /hello.txt HTTP/1.1
+Range: bytes=0-2
 
-
---3d6b6a416f9b5
-Content-Type: text/plain
-Content-Range: bytes 1-2
-
-he
---3d6b6a416f9b5
-Content-Type: text/plain
-Content-Range: bytes 6/10
-
-world
---3d6b6a416f9b5--
+```
