@@ -11,4 +11,7 @@ OPTIONS /example HTTP/1.1
 HTTP/1.1 OK
 Allow:GET,POST,PUT,OPTIONS
 ```
-如果对资源使用了它并不支持的请求方法，那么服务器会返回：HTTP 405 错误 – 方法不被允许 (Method not allowed)错误。
+
+服务器应该返回405 (Method Not Allowed)响应，如果使用的请求方法是被服务器所知但是并被请求资源允许的话。
+服务器应该返回 501 (Not Implemented) ，如果请求方法没有实现或者识别的话。
+

@@ -1,8 +1,8 @@
-http method connect + http tunnel 
+#CONNECT 方法
 
-假设当前已经建立HTTP连接。现在要传递敏感信息（比如登录密码），要求转到ssl，如何做到？
+在当前已经建立HTTP连接的情况下，CONNECT 方法用来告知代理代理服务器，客户端想要和服务器之间建立SSL连接。
 
-如果只有客户端和服务器（没有HTTP代理服务器），可以使用Connection头字段来表达客户端要升级的请求：
+要是没有HTTP代理服务器，客户端可以使用Connection头字段来表达客户端要升级到SSL的请求：
 ```
 GET http://example.bank.com/acct_stat.html?749394889300 HTTP/1.1
 Host: example.bank.com

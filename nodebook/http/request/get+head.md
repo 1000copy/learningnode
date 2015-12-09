@@ -1,4 +1,14 @@
-#GET 方法
+#GET ，HEAD 方法
+
+GET方法用来获取URL指定的资源。这个URL指向可以是一个静态文件，也可以是一个数据生成软件产生的动态内容。
+
+如果GET请求包含条件获取字段，那么GET 请求就具体化为条件获取(conditional GET)。条件字段包括： If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match, or If-Range 。条件获取请求下，只有满足了条件的资源才会传递响应主体到客户端。这样就可以达成缓存的目的。
+
+如果GET 请求包括了范围条件，那么GET请求就被具体化为局部获取(partial GE)。
+
+#实验
+
+##环境准备
 
 我们准备一个基于node 的服务器，文件名  hello.js  ，代码如下：
 ```
@@ -12,6 +22,7 @@ var server = app.listen(3000, function () {
 });
 ```
 并且通过node执行node hello.js 
+## 验证GET和HEAD的差别
 
 然后我们使用nc发起get：
 ```
@@ -43,8 +54,10 @@ ETag: W/"16-FmHX0hamHjYkHeAP/7PfzA"
 Date: Thu, 03 Dec 2015 09:54:01 GMT
 Connection: close
 ```
-这个案例中的响应头内，有了一个新的项目，叫做ETag，是文档的标识。如果文档改变了，这个标识就会改变。服务器发送这个的目的是为了支持客户端的条件GET。客户端可以发起一个GET ,标明如果文档改变就发送，否则就会使用本地的缓冲。这样可以省下并非必要的网络流量。
 
+##验证：条件获取
+这个案例中的响应头内，有了一个新的项目，叫做ETag，是文档的标识。如果文档改变了，这个标识就会改变。服务器发送这个的目的是为了支持客户端的条件GET。客户端可以发起一个GET ,标明如果文档改变就发送，否则就会使用本地的缓冲。这样可以省下并非必要的网络流量。
+##
 继续这个案例，搭配ETag和If-None-Match(以及If-Match)头字段可以达到使用缓存的效果。客户端可以通过 If-None-Match 头字段指明，如果文档标识不匹配标识，就发送新文档来；否则，服务器就会发送  304 Not Modified。
 ```
 GET /sample.html HTTP/1.1
