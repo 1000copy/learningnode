@@ -4,8 +4,11 @@
 ```
      message-body    = *OCTET
 ```
-OCTET 就是八位字节。所有 *OCTET标示多个字节。
+OCTET 就是字节。所有 *OCTET标示多个字节。
 仅仅看 *OCTET是无法知道其中到底是什么内容。所有在消息头字段内，可以用一组头字段来标示。比如Content-Type就会用MIMI类型来只是内容类型。
+
+内容可以放置静态文件内容、动态生成内容、还可以放置压缩后的动态和静态内容。整个内容可以一次传输完毕，或者分成多块传输。如果有必要，在内容后，还可以放置拖挂——一些只有内容传递完毕才能够知道的首部字段值。
+
 ```
  entity-header  =  Content-Encoding        
                       | Content-Language   
@@ -34,7 +37,7 @@ OCTET 就是八位字节。所有 *OCTET标示多个字节。
 - Allow 该资源所允许的各种请求方法，例如，GET 和 HEAD。
 - ETag 这份文档的唯一验证码。
 
-我们第一章提到的案例：
+我们第一章提到的响应消息案例：
 
 ```
 HTTP/1.1 200 OK
@@ -53,11 +56,11 @@ Connection: Closed
    </body>
 </html>
 ```
-正是通过Content-Type指明承载内容为 text/html，通过Content-Length:指明长度为88字节的。
-# 内容类型 
+正是在主体内放置静态Html文件，然后通过Content-Type指明承载内容为 text/html，通过Content-Length:指明长度为88字节的。
+##内容类型 
 Content-Type可以是丰富多彩的静态文件，也可以是一些在文件系统内看不到的但是非常实用的格式，比如表达表单数据的multipart/form-data。这个可以在(POST请求)[post.md]内看到案例。还可以是multipart/x-byterangs ,用来传递文件局部，可以在(GET请求)[get+head.md]看到案例。
 
-#内容编码
+##内容编码
 
 内容可以压缩后再传递，在另一端在解压缩。这样做可以节省网络传递数据量。Content-Encoding就是说明内容作了怎么的压缩，以便对等端可以知道如何解压缩。目前支持的压缩方式有：
 
@@ -68,7 +71,7 @@ Content-Type可以是丰富多彩的静态文件，也可以是一些在文件�
 
 #传输编码
 
-传输编码可以把消息主体分为若干块大小已知的块来传输。Transfer-Encoding不是主体头字段之一，而是一个首部头字段。这个字段目前的取值只能是chunked 。表示分块传输。使用分块传输的好处，是对动态生成的内容而言的，可以边生成边传输给客户端，从而提升良好的客户体验。还是一个hello.txt文件为例，如果我要把内容hello world 做分块传输，先传5个字节再传后面的7个字节。那么响应消息如下：
+传输编码可以把消息主体分为若干块大小已知的块来传输。Transfer-Encoding不是主体头字段之一，而是一个普通的首部头字段。这个字段目前的取值只能是chunked 。表示分块传输。使用分块传输的好处，是对动态生成的内容而言的，可以边生成边传输给客户端，从而提升良好的客户体验。还是一个hello.txt文件为例，如果我要把内容hello world 做分块传输，先传5个字节再传后面的7个字节。那么响应消息如下：
 ```
 HTTP/1.1 200 OK
 Transfer-Encoding: chunked
@@ -84,5 +87,21 @@ hello
 
 #拖挂
 
+可以在内容传递完毕后，接着加入一些首部值作为拖挂—。之所以这些首部值不放到真正的首部区域，是因为有些首部值只有传递内容都完成了才知道。比如，我希望为分块传输添加一个内容校验首部的话，那么此值必须全部内容都传递了才能计算得到。
+
+如果要放置拖挂，需要首先在首部使用Trailer头字段声明拖挂字段名。在传递内容完毕后，填写字段和字段值，以“：”分隔。依然以hello world为例：
+```
+HTTP/1.1 200 OK
+Transfer-Encoding: chunked
+Server: express
+Trailer: checksum
+
+5
+hello
+7
+ world
+0
+checksum:5eb63bbbe01eeed093cb22bb8f5acdc3
+```
 
 
