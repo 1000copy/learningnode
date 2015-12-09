@@ -9,17 +9,7 @@ var initFolder = '.';
 
 // List filename extensions and MIME names we need as a dictionary. 
 var mimeNames = {
-    '.css': 'text/css',
-    '.html': 'text/html',
-    '.js': 'application/javascript',
-    '.mp3': 'audio/mpeg',
-    '.mp4': 'video/mp4',
-    '.ogg': 'application/ogg', 
-    '.ogv': 'video/ogg', 
-    '.oga': 'audio/ogg',
-    '.txt': 'text/plain',
-    '.wav': 'audio/x-wav',
-    '.webm': 'video/webm'
+    '.txt': 'text/plain'
 };
 
 http.createServer(httpListener).listen(8000);
