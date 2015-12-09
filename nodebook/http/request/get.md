@@ -1,4 +1,4 @@
-#GET ，HEAD 方法
+#GET 方法
 
 GET方法用来获取URL指定的资源。这个URL指向可以是一个静态文件，也可以是一个数据生成软件产生的动态内容。
 
@@ -20,23 +20,18 @@ Content-Length: 3
 
 hel
 ```
-Content-Range的值，“/”的前面一组数字表明本次返回位置，“/”的最后一个数值指明资源的总大小。
+Content-Range的值，“/”的前面一组数字表明本次返回位置范围，“/”的最后一个数值指明资源的总大小。
 #实验
 
 ##环境准备
 
-我们准备一个基于node 的服务器，文件名  hello.js  ，代码如下：
+在code代码目录内找到hello.js  ，代码如下：
+
+并且通过node执行
 ```
-var express = require('express');
-var app = express();
-app.get('/hello.htm', function (req, res) {
-  res.send('<h1>Hello, World!</h1>');
-});
-var server = app.listen(3000, function () {
-  console.log('listening on 3000');
-});
+node hello.js 
 ```
-并且通过node执行node hello.js 
+
 ## 验证GET和HEAD的差别
 
 然后我们使用nc发起get：
