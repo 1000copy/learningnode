@@ -1,10 +1,12 @@
 #message-body 消息主体
 
 无论是请求消息还是响应消息，都有一个可选的消息主体(message-body)。如果是请求消息在提交表单，那么主体内就可以放置表单的数据，如果是下载一个gif，那么主体内就可以放置gif文件的二进制字节集合。所以，消息主体内可以放置任何内容。它的定义也是如此：
+```
      message-body    = *OCTET
+```
 OCTET 就是八位字节。所有 *OCTET标示多个字节。
 仅仅看 *OCTET是无法知道其中到底是什么内容。所有在消息头字段内，可以用一组头字段来标示。比如Content-Type就会用MIMI类型来只是内容类型。
-
+```
  entity-header  =  Content-Encoding        
                       | Content-Language   
                       | Content-Length         
@@ -17,7 +19,7 @@ OCTET 就是八位字节。所有 *OCTET标示多个字节。
                       | Last-Modified        
                       | extension-header
        extension-header = message-header#response(OK)     
-
+```
 当然，我们依然不去关心扩展部分（ extension-header ）。
 
 - Content-Type 实体中所承载对象的类型。
@@ -66,8 +68,8 @@ Content-Type可以是丰富多彩的静态文件，也可以是一些在文件�
 
 #传输编码
 
-传输编码可以把消息主体分为若干块大小已知的块来传输。Transfer-Encoding不是主体头字段之一，而是一个首部头字段。这个字段目前的取值只能是chunked 。表示分块传输。使用分块传输的好处，是对动态生成的内容而言的，可以边生成边传输给客户端，从而提升良好的客户体验。还是一个hello.txt文件为例，如果我要把内容hello world 做分块传输，先传7个字节再传后面的7个字节。那么响应消息如下：
-
+传输编码可以把消息主体分为若干块大小已知的块来传输。Transfer-Encoding不是主体头字段之一，而是一个首部头字段。这个字段目前的取值只能是chunked 。表示分块传输。使用分块传输的好处，是对动态生成的内容而言的，可以边生成边传输给客户端，从而提升良好的客户体验。还是一个hello.txt文件为例，如果我要把内容hello world 做分块传输，先传5个字节再传后面的7个字节。那么响应消息如下：
+```
 HTTP/1.1 200 OK
 Transfer-Encoding: chunked
 Server: Apache/3.0
@@ -77,7 +79,7 @@ hello
 7
  world
 0
-
+```
 分块主体结构比较简单，首选发送一个数字（16进制）指明本块大小，随后回车标示本块开始。接下来第二个块，更多的块也是以块大小的数字开始，随后回车标示本块开始。如此等等。直到块结束就跟着一个数字0。整个内容传递完毕。
 
 #拖挂
