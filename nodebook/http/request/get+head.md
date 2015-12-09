@@ -6,6 +6,21 @@ GET方法用来获取URL指定的资源。这个URL指向可以是一个静态�
 
 如果GET 请求包括了范围条件，那么GET请求就被具体化为局部获取(partial GET)。使用局部获取，对于大文件，可以分块传递，提高效率。如果是在视频播放的场景，可以只传递用户跳播的视频片段，提供更好的用户体验。
 
+以访问hello.html获取其局部为例。使用GET方法，并通过Range头字段指定指定获取文件的开始字节索引和结束字节索引发出如下局部请求：
+```
+GET /hello.html HTTP/1.1
+Range: bytes=0-2
+```
+服务器响应:
+```
+HTTP/1.1 206 Partial Content
+Content-Type: text/html
+Content-Range: bytes 0-2/12
+Content-Length: 3
+
+hel
+```
+Content-Range的值，“/”的前面一组数字表明本次返回位置，“/”的最后一个数值指明资源的总大小。
 #实验
 
 ##环境准备
