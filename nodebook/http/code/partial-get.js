@@ -1,21 +1,17 @@
-// Initialize all required objects.
+var PORT =8000
 var http = require("http");
 var fs = require("fs");
 var path = require("path");
 var url = require('url');
 
-// Give the initial folder. Change the location to whatever you want.
-var initFolder = '.';
-
-// List filename extensions and MIME names we need as a dictionary. 
 var mimeNames = {
     '.txt': 'text/plain'
 };
 
-http.createServer(httpListener).listen(8000);
+http.createServer(httpListener).listen(PORT);
 
 function httpListener(request, response) {
-    // We will only accept 'GET' method. Otherwise will return 405 'Method Not Allowed'.
+    // 仅仅接受GET方法.
     if (request.method != 'GET') {
         sendResponse(response, 405, { 'Allow': 'GET' }, null);
         return null;
@@ -24,7 +20,6 @@ function httpListener(request, response) {
     var filename =
         initFolder + url.parse(request.url, true, true).pathname.split('/').join(path.sep);
 
-    // Check if file exists. If not, will return the 404 'Not Found'. 
     if (!fs.existsSync(filename)) {
         sendResponse(response, 404, null, null);
         return null;
@@ -34,13 +29,11 @@ function httpListener(request, response) {
     var stat = fs.statSync(filename);
     var rangeRequest = readRangeHeader(request.headers['range'], stat.size);
 
-    // If 'Range' header exists, we will parse it with Regular Expression.
+
     if (rangeRequest == null) {
         responseHeaders['Content-Type'] = getMimeNameFromExt(path.extname(filename));
         responseHeaders['Content-Length'] = stat.size;  // File size.
         responseHeaders['Accept-Ranges'] = 'bytes';
-
-        //  If not, will return file directly.
         sendResponse(response, 200, responseHeaders, fs.createReadStream(filename));
         return null;
     }
@@ -84,8 +77,6 @@ function sendResponse(response, responseStatus, responseHeaders, readable) {
 
 function getMimeNameFromExt(ext) {
     var result = mimeNames[ext.toLowerCase()];
-    
-    // It's better to give a default value.
     if (result == null)
         result = 'application/octet-stream';
     
@@ -93,16 +84,6 @@ function getMimeNameFromExt(ext) {
 }
 
 function readRangeHeader(range, totalLength) {
-        /*
-         * Example of the method 'split' with regular expression.
-         * 
-         * Input: bytes=100-200
-         * Output: [null, 100, 200, null]
-         * 
-         * Input: bytes=-200
-         * Output: [null, null, 200, null]
-         */
-
     if (range == null || range.length == 0)
         return null;
 
