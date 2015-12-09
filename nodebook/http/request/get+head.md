@@ -4,7 +4,7 @@ GET方法用来获取URL指定的资源。这个URL指向可以是一个静态�
 
 如果GET请求包含条件获取字段，那么GET 请求就具体化为条件获取(conditional GET)。条件字段包括： If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match, or If-Range 。条件获取请求下，只有满足了条件的资源才会传递响应主体到客户端。这样就可以达成缓存的目的。
 
-如果GET 请求包括了范围条件，那么GET请求就被具体化为局部获取(partial GE)。
+如果GET 请求包括了范围条件，那么GET请求就被具体化为局部获取(partial GET)。使用局部获取，对于大文件，可以分块传递，提高效率。如果是在视频播放的场景，可以只传递用户跳播的视频片段，提供更好的用户体验。
 
 #实验
 
@@ -87,3 +87,27 @@ X-Powered-By: Express
 Last-Modified: Thu, 04 Dec 2015 09:54:01 GMT
 Connection: close
 ```
+
+##验证：局部获取(有待实现服务器 http://www.codeproject.com/Articles/813480/HTTP-Partial-Content-In-Node-js)
+
+假设我们有一个文本文件，叫做hello.txt 内容就是"hello world"。我们可以使用curl 发起一个局部获取。
+
+~# curl -s -D - -H "Range: bytes=1-2, 6-" http://www.example.com
+HTTP/1.1 206 Partial Content
+Accept-Ranges: bytes
+Content-Type: multipart/byteranges; boundary=3d6b6a416f9b5
+Content-Length: 385
+Server: express
+
+
+--3d6b6a416f9b5
+Content-Type: text/plain
+Content-Range: bytes 1-2
+
+he
+--3d6b6a416f9b5
+Content-Type: text/plain
+Content-Range: bytes 6/10
+
+world
+--3d6b6a416f9b5--

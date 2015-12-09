@@ -31,6 +31,9 @@ GET方法是HTTP 0.9协议支持的唯一HTTP请求方法，用来指示传递�
 
 采用文本的首部，让HTTP变得容易扩展。只要客户端和服务器做好约定，就可添加自己需要的新的请求方法。不过，这个部分的内容，不是本书需要讨论的。
 
+# 消息主体 message-body
+会单独分章说明
+
 #稍作总结：
 
 
@@ -50,4 +53,6 @@ GET方法是HTTP 0.9协议支持的唯一HTTP请求方法，用来指示传递�
 - [OPTIONS请求](options.md)
 - [PUT请求和DELETE请求](put+delete.md)
 - [CONNECT请求](connect.md)
+
+
 
