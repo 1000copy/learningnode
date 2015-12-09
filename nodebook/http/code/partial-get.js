@@ -1,3 +1,8 @@
+/*
+$nc localhost 8000
+GET /hello.txt HTTP/1.1
+Range: bytes=0-2
+*/
 var PORT =8000
 var http = require("http");
 var fs = require("fs");
@@ -18,7 +23,7 @@ function httpListener(request, response) {
     }
 
     var filename =
-        initFolder + url.parse(request.url, true, true).pathname.split('/').join(path.sep);
+        "./" + url.parse(request.url, true, true).pathname.split('/').join(path.sep);
 
     if (!fs.existsSync(filename)) {
         sendResponse(response, 404, null, null);
