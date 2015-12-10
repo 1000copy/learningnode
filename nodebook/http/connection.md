@@ -159,7 +159,7 @@ node pipeline.js
 ```
 然后执行命令
 ```
-$(echo -en "GET /1 HTTP/1.1\n\nGET /2 HTTP/1.1\n\n"; sleep 10) | telnet localhost 3000
+$(echo -en "GET /1 HTTP/1.1\n\nGET /2 HTTP/1.1\n\n"; sleep 10) | nc localhost 3000
 ```
 
 
