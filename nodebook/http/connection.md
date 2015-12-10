@@ -151,3 +151,15 @@ Connection:close
 这就是管线模式和持久连接的不同。在高时延网络条件下，这样做可以降低网络时间。
 
 嗯，这就是4种处理多事务的连接模型的差别。
+#实验：管线连接的能力的验证
+用过telnet和echo的组合，同时发送两个资源请求到Node Http服务器，查看服务器的是否有效返回响应。
+```
+cd code 
+node pipeline.js
+```
+然后执行命令
+```
+$(echo -en "GET /1 HTTP/1.1\n\nGET /2 HTTP/1.1\n\n"; sleep 10) | telnet localhost 3000
+```
+
+
