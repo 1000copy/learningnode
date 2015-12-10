@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #请求方法CONNECT
 
 请求方法CONNECT用于客户端和代理服务器（proxy server）之间，而不是客户端和服务器之间。
@@ -21,3 +22,12 @@ Host: www.example.com:443
 
 
 
+=======
+目录
+
+[介绍](introduction.md)
+[术语](term.md)
+[一点历史](history.md)
+[请求](request/)
+[响应](request/)
+>>>>>>> origin/master
