@@ -28,3 +28,5 @@ node_modules
 *.out
 
 doudou.xcodeproj
+
+nodebook/http/code/longlong.txt
