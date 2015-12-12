@@ -33,12 +33,15 @@ function joinText(dir,tofile){
 	for (var i = 0 ;i<files.length;i++){
 		var a = files[i]
 		var f = dir +a
-		console.log(f)
-		if (!fs.lstatSync(f).isDirectory())
+		if (!fs.lstatSync(f).isDirectory()){
 		// if (!fs.stats().isDirectory(a))	
+			console.log(f)
 			fs.appendFileSync(tofile,fs.readFileSync(f)+"\n")
-		else
+		}
+		else{
 			joinText(f,tofile)
+		
+		}
 	}
 	
 }
