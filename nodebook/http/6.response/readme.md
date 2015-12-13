@@ -3,12 +3,12 @@
 服务器执行了客户端请求后，需要给客户端以响应，告知它是否成功，以及可能防止在消息主体内的执行后的结果。
 
 响应消息构成：
-```
-       Response      = Status-Line           
-                       *(header  CRLF)  
-                       CRLF
-                       [ message-body ]          
-```
+
+    Response      = Status-Line           
+                   *(header  CRLF)  
+                   CRLF
+                   [ message-body ]          
+
 #状态行（ Status-Line)
 
 由HTTP版本、状态码、状态说明共三个字段构成
