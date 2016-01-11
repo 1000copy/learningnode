@@ -338,7 +338,11 @@ $ git checkout master && git merge bug001 & cat f && git commit -m"merge bug001"
 $ git checkout dev && git stash pop && cat f
 something
 WIP
+## 打一个新标签 
 
+$ git tag v1.0
+$ git tag
+v1.0
 
 
 
