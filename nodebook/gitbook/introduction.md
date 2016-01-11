@@ -8,7 +8,7 @@
 
 ###创建repo
 
-    mkdir repo  && cd repo && git init
+    mkdir repo; cd $_ ; git init
     Initialized empty Git repository in /Users/lcjun/repo/.git/
 
 ### 验证
