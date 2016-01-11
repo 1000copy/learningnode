@@ -321,3 +321,9 @@ git merge命令用于合并指定分支到当前分支。
     $ git add file1.txt
     $ git add file2.txt file3.txt
     $ git commit -m "add 3 files."
+## 开始一时提交不了，但是要求临时改bug 
+
+echo line1 >file1 && cat file1
+
+
+
