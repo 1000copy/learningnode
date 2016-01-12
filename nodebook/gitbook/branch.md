@@ -1,5 +1,7 @@
 ##分支
 
+之前讲到的东西，svn也是一样。这里讲到的branch，则是git的优势所在。就是同样做分支，git更快。
+
 ###重新初始化
 
     cd .. && rm -rf repo && mkdir repo  && cd repo && git init
