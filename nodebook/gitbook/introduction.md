@@ -2,26 +2,43 @@
     git config --global user.name "Your Name"
     git config --global user.email "your_email@whatever.com"
 
-## 实验：引入
+## 实验：Git 引入 
 
-创建repo，添加文件到暂存区，提交暂存区文件到repo。
+现在我要写代码了。假设文件名为file1，内容经过多次修改，最终为三行（当然，我们只是演示git，所以文件很简单即可）：
 
-涉及对象：
+Line1
+Line2
+Line3
 
-仓库（repo），暂存（stage），工作区（work space）
+那么我会去建立目录，创建文件，编辑修改。这些和一般的文件创建没有区别。
+
+但是使用git，就需要多几步：
+
+1. 创建一个版本仓库
+2. 提交修改到仓库
+
+好处是：
+
+1. 当你文件修改错的时候，可以回溯之前的版本。
+2. 可以知道几次修改之间的变化所在。
+
+这就是版本管理的价值。现在，我们通过实验，验证我们的观点。
 
 ###创建repo
 
-    mkdir repo; cd $_ ; git init
+在文件系统内创建一个目录，repo。把它作为你的工作目录(work space)。
+
+    $ mkdir repo  && cd repo && git init
     Initialized empty Git repository in /Users/lcjun/repo/.git/
 
-### 验证
+意料之中，git说仓库已经建立（repository)。一个命令完成,我们就涉及到了两个概念:一个是工作目录，一个是版本仓库（以后我们简称它为repo）。你看，版本管理系统涉及到的术语并不复杂。
+
+### 验证 repo
 
     $ls -A
     .git
 
-多了一个.git的目录，提示表明仓库已经创建。它的物理存在形式是.git目录，此目录由git命令维护，全部版本信息都存储于此。
-ls的 -A 指明所有文件包括隐藏文件。但是不显示特殊目录 “.”,“..”
+在此目录内建立一个.git 隐藏目录，这就是repo了。此目录用来存储全部的版本文件。有了它，魔法开始。
 
 ###创建测试文件file1
 
@@ -38,19 +55,34 @@ ls的 -A 指明所有文件包括隐藏文件。但是不显示特殊目录 “.
 
 ### 添加到stage
 
-    git add file1
+这里做的工作，就是挑选文件，把它放到stage(驿站)内，随后的命令commit会使用这个stage内的文件，把它们提交到版本仓库内。
+
+    $ git add file1
+
+    或者
+
+    $ git stage file1
+
 
 ### 查看状态
 
-        git status -s 
+        $ git status -s 
         A file1
+
+可以知道file1 已经加入stage（大写字母A标志为 added 的缩写）。
+
+
+### 从stage移除
+
+    $ git rm --cache file1 移除指定文件
+    $ git reset 全部移除
 
 A表示加入到stage，可以提交
 
 
 ###提交到仓库
 
-    git commit -m"line1" -s
+    $ git commit -m"line1" -s
     [master (root-commit) fe2a6b9] line1
      1 file changed, 1 insertions(+)
      create mode 100644 file1
@@ -58,7 +90,46 @@ A表示加入到stage，可以提交
 -m后面输入的是本次提交的说明
 输出文字说明：1个文件被改动，插入了两行内容
 
-### 修改文件，然后再次提交
+### 看了repo有什么
+
+$ git log
+commit d2fe108e92df8d827f6ec237db85693dbd6a1eab
+Author: liu chuan jun <1000copy@gmail.com>
+Date:   Tue Jan 12 10:07:42 2016 +0800
+
+    all
+可以通过log子命令来查看repo内已经有的版本。这里显示目前已经有一个版本（commit）。版本标识为 d2fe108e92df8d827f6ec237db85693dbd6a1eab，作者是liu chuan jun <1000copy@gmail.com>等等。
+
+
+### 来点概念
+
+一个速成的git 仓库已经构建：repo已经创建、文件版本已被跟踪，版本已经可供查询。现在我们来点抽象的概念。计算机怪杰的命令表象下，肯定必须有思想啊。
+
+留意到一个重要的概念：stage。git提交文件到仓库，不是直接提交，而是经由stage的。通过git add或者git stage把文件添加到stage。而git commit 提交的只能是已经处于stage的文件。
+
+这个stage就像购物车，你拿到商品不是直接结订单，而是经由购物车，挑挑选选，然后去结账。 stage也是。本来是有驿站，或者驿站马车的意思。当然，它还叫index，还叫cache，使用一个新的词表达新的概念，使用stage比index和cached强，后两者过于含糊。由此可见，在计算机怪杰的心中，此处也是一片混乱，怎么方便怎么来的：）。无论如何，翻译成“暂存”是不科学的。驿站都要好很多。
+
+有了stage，当然可以更容易的挑挑拣拣。你可以轻轻松松的完成这样的挑拣过程：
+
+    我这次修改了file1,file2,file3，把它们全部加入stage进来(git add .)；哦，对了，file3尽管修改了，但是和file1，file2不同，前者是解决一个bug，后者是提供一个feature。这样的话，我为了以后查阅方便，应该分两次提交，把file3拿出来(git rm --cached file3)，把1,2作为feature big deal 提交，然后把file3拿进来(git add file3),提交为bug 001 。Congratulation ！搞定。 
+
+这就是stage的价值。所以，git是鼓励你使用stage的。
+
+然而，作为电脑怪杰，一切主张都可变通，一切规范都是障眼法。如果你知道你在做什么，他就不拦着你。它也会支持你忽略stage，直接commit。代价也不高就是加一个 -a 参数。只要你的文件是已经被跟踪的，就可以这样做，一步搞定。
+
+前面提到在查询状态是，A字母表示added。还有更多缩写：
+
+    ' ' = unmodified
+    M = modified
+    A = added
+    D = deleted
+    R = renamed
+    C = copied
+    U = updated but unmerged
+
+这些魔术字母经过一段时间的使用后，内化为大脑的一个画面。于是，可以大大降低怪杰们的眼球识别负担，不必看单词，只要一个字母就可以知道是什么状态。
+
+### 实验：把add和commit合并一步
 
 修改文件
 
@@ -67,14 +138,16 @@ A表示加入到stage，可以提交
     line2
     
 提交
-    git commit -m"line2"  -a
+    $ git commit -m"line2"  -a
     [master 239b523] line2
      1 file changed, 2 insertions(+), 1 deletion(-)
 
 如果想要把add和commit合二为一，可以在commit命令后加入-a选项。
 
 
-## 再次修改
+## 查看版本间差异
+
+###再次修改
 
     echo -en "\nline3" >> file1 && cat file1
 
@@ -90,9 +163,9 @@ A表示加入到stage，可以提交
 
 被修改过了。
 
-###查看具体差异
+###查看差异
 
-    git diff
+    $ git diff
     diff --git a/file1 b/file1
     index 83db48f..84275f9 100644
     --- a/file1
@@ -120,8 +193,8 @@ A表示加入到stage，可以提交
 
 ##添加
 
-    git add file2
-    git status -s
+    $ git add file2
+    $ git status -s
     M:   readme.txt
 
 ##然后，再修改
@@ -132,7 +205,7 @@ A表示加入到stage，可以提交
 
 ##提交：
 
-    git commit -m"stage testcase"
+    $ git commit -m"stage testcase"
     [master d4f25b6] git tracks changes
      1 file changed, 1 insertion(+)
 
@@ -145,7 +218,7 @@ A表示加入到stage，可以提交
 
 ## 为了方便，可以合并添加和和提交
 
-    git commit -m"one step" -a
+    $ git commit -m"one step" -a
     [master c8bb42a] one step
      1 file changed, 1 insertion(+)
 
@@ -180,13 +253,13 @@ A表示加入到stage，可以提交
 先添加一个新文件test.txt到Git并且提交：
 
     echo something >>file3
-    git add file3
-    git commit -m "add file3"
+    $ git add file3
+    $ git commit -m "add file3"
 
      1 file changed, 1 insertion(+)
      create mode 100644 file3
 
-    $ git rm file3
+    $ $ git rm file3
     $ git commit -m "remove file3"
     [master d17efd8] remove file3
      1 file changed, 1 deletion(-)
@@ -194,6 +267,7 @@ A表示加入到stage，可以提交
  
     ls 
 
+<<<<<<< HEAD
 现在，文件就从版本库中被删除了。
 
 ##分支
@@ -364,10 +438,4 @@ v1.0
     * e3265bb 2016-01-11 | add ok (HEAD -> master) [1000copy]
     * f38ef5a 2016-01-11 | add tag (origin/master, origin/HEAD) [1000copy]
 
-
-
-
-
-
-
-
+现在，文件就从版本库中被删除了。
