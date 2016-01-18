@@ -3,7 +3,8 @@
 每次碰到新的 GUI 编程体系时，我总是有一个Hello 应用。它总是这样的：
 
 1. 首页
-2. 首页上一个按钮，点击后弹出一个对话页，显示点什么
+2. 首页上一个按钮
+3. 按钮事件后弹出一个对话页，显示点文字
 
 不管是Delphi、还是QT、C#，我都是这么干的。有了它的完成，就可以熟悉IDE，感觉下语言特点，过一下GUI独特的概念了。现在，我点Swift的名了。
 
@@ -42,7 +43,7 @@ xcode 会生成一组文件，我们首先关注的就是它生成的ViewControl
 	    }
 	}
 
-点击执行，界面如我所愿。你也先运行下，感受下样子，然后接着看代码分析：
+点击执行，界面如我所愿。然后接着看代码分析：
 
 1. 第一行，导入UIKit。UIKit是iOS SDK中的一个框架。做界面的话，必须要包含它的。
 2. 第二行中自定义类 ViewController，继承自 UIViewController 。UIViewController 被称为视图控制器，顾名思义，它负责和管理视图：视图内的事件代码在这里编写；视图的构建在这里进行。那么什么是视图？抛开概念不谈，Button就是一个视图，整个页面也是一个视图，视图可以嵌套，比如Button 嵌套在页面内，页面就是它的父视图，而Button就是页面的子视图。
@@ -51,9 +52,8 @@ xcode 会生成一组文件，我们首先关注的就是它生成的ViewControl
 5. 事件处理。可以使用 UIAlertController 创建一个对话视图。UIAlertController.addAction 方法可以为UIAlertController添加按钮和按钮的Touch 事件。于是我们涉及到了闭包
 6. 闭包。在handle参数内后面的两个花括号之间，涉及到一个叫做闭包的语法。
 
- { (action: UIAlertAction!) in
-	            print("OK")
-	        }
+	 { (action: UIAlertAction!) in
+		            print("OK")    }
 
 形如：
 
@@ -65,17 +65,25 @@ func foo (paramter1,paramter2){
   statements 
 }
 
-但是好处更多。比如：
+但是比普通函数有更多好处。比如：
 
 1. 精简
-2. 可以引用当前作用域内的变量 
+2. 可以引用当前作用域内的变量
 
-实际上，为了更好的理解闭包，我的做法是对比。给 OK 按钮加入的handler是闭包的，而给Cancel 加入的handler 则使用普通方法。
+实际上，为了更好的理解闭包，我的做法是对比代码。给 OK 按钮加入的handler是闭包的，而给Cancel 加入的handler 则使用普通方法。
 
-现在，我们感受到了第一个app的模样。也浅尝辄止的学习了视图控制器、闭包、Swift类、Swift 方法定义、事件定义。我们也知道了UIKit是一个iOS的开发框架。
+现在，我们感受到了第一个app的模样。也浅尝辄止的学习了视图控制器、闭包、Swift类、Swift 
+方法定义、事件定义。我们也知道了UIKit是一个iOS的开发框架。
+
+##扩展
 
 视图种类很多，完整的请GOOGLE: uikit user interface catalog 去查看官方文档。
-框架的种类也很多，涵盖UI、Video、Image、Network等。完整的类别可以GOOGLE: iOS frameworks ,查看官方文档。
+
+框架的种类也很多，涵盖UI、Video、Image、Network等。我们也知道在iOS内，完整的类别可以GOOGLE: iOS frameworks ,查看官方文档。
+
+我们使用到了TouchDown事件。同时还有更多的Touch事件。可以 GOOGLE: UIControl  Events
+
+https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIControl_Class/index.html#//apple_ref/doc/constant_group/Control_Events
 
 可以在这里下载现成的代码。位置： https://github.com/1000copy/appletech/blob/master/swift/nav/helloswift/doudou/ViewController.swift
 
