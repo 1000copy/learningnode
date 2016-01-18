@@ -1,3 +1,7 @@
+## 配置
+    git config --global user.name "Your Name"
+    git config --global user.email "your_email@whatever.com"
+
 ## 实验：Git 引入 
 
 现在我要写代码了。假设文件名为file1，内容经过多次修改，最终为三行（当然，我们只是演示git，所以文件很简单即可）：
@@ -262,5 +266,176 @@ Date:   Tue Jan 12 10:07:42 2016 +0800
      delete mode 100644 file3
  
     ls 
+
+<<<<<<< HEAD
+现在，文件就从版本库中被删除了。
+
+##分支
+###重新初始化
+
+    cd .. && rm -rf repo && mkdir repo  && cd repo && git init
+    echo -en "line1\n" > file1
+    git add file1
+    git commit -m"master commit" -a file1
+
+首先，我们创建dev分支，然后切换到dev分支：
+
+    git checkout -b dev
+    Switched to a new branch 'dev'
+
+git checkout命令加上-b参数表示创建并切换。
+
+###查看当前分支
+
+    $ git branch
+    * dev
+      master
+
+命令会列出所有分支，*号指示当前分支。
+
+###做个修改
+
+    echo -en "line2" >> file1 && git add file1 && git commit -m "branch commit"
+    [dev a8042b5] branch commit
+     1 file changed, 2 insertions(+)
+
+现在，dev分支的工作完成，我们就可以切换回master分支：
+
+    $ git checkout master
+    Switched to branch 'master'
+
+### 查看
+
+    cat file1
+    line1
+
+那个提交是在dev分支上，并不影响master分支。
+
+
+合并工作成果
+
+    $ git merge dev
+    Updating d17efd8..fec145a
+    Fast-forward
+     readme.txt |    1 +
+     1 file changed, 1 insertion(+)
+
+git merge命令用于合并指定分支到当前分支。
+
+    $cat file1
+    line1
+
+合并完成。
+
+###删除dev分支
+
+    $ git branch -d dev
+    Deleted branch dev (was a8042b5).
+
+###查看branch
+
+    $ git branch
+    * master
+
+就只剩下master分支了
+
+##解决冲突
+
+###准备新的 feature1 分支
+
+    $ git checkout -b feature1
+    Switched to a new branch 'feature1'
+
+##修改
+
+    echo -en "line1" > file1
+
+###提交：
+
+    $ git add file1 && git commit -m "line1"
+    [feature1 6ec678c] line1
+     1 file changed, 1 insertion(+), 3 deletions(-)
+
+###切换到master分支：
+
+    $ git checkout master
+    Switched to branch 'master'
+    Your branch is ahead of 'origin/master' by 1 commit.
+
+
+###修改 
+
+    echo lineone > file1 && git commit -m "lineone" -a
+    [master 2cf0051] lineone
+     1 file changed, 1 insertion(+), 3 deletions(-)
+
+
+##合并冲突了
+
+    $ git merge feature1
+    Auto-merging file1
+    CONFLICT (content): Merge conflict in file1
+    Automatic merge failed; fix conflicts and then commit the result.
+
+###查看内容
+    cat file1
+    <<<<<<< HEAD
+    lineone
+    =======
+    line1
+    >>>>>>> feature1
+
+###修改、再提交
+
+    $  echo lineone > file1 && git add file1 && git commit -m "conflict solved"
+    [master c98d7b9] conflict solved
+
+###疑难
+
+为何Git不能一次被文件提交，而需要分两步（add，commit）？
+
+因为commit可以一次提交很多文件，所以你可以多次add不同的文件，就是为了选择文件时可以更加灵活。比如：
+
+    $ git add file1.txt
+    $ git add file2.txt file3.txt
+    $ git commit -m "add 3 files."
+## 开始一时提交不了，但是要求临时改bug 
+
+echo something >f && cat  f & git add f  && git commit -m"something"
+git checkout -b dev && echo WIP >> f && cat f
+git stash
+git checkout master && cat f
+something
+# 在buf001分支上，修复bug,提交
+git checkout -b bug001 && echo buf001fix >> f && cat f && git commit -m"bugfix" -a
+# 查看branch
+$git branch
+# 切换到master分支，完成合并(记得删除bug001分支）
+$ git checkout master && git merge bug001 & cat f && git commit -m"merge bug001" -a 
+
+$ git checkout dev && git stash pop && cat f
+something
+WIP
+## 打一个新标签 
+
+$ git tag v1.0
+$ git tag
+v1.0
+
+## 配置别名，会方便很多
+
+    git config --global alias.co checkout
+    git config --global alias.ci commit
+    git config --global alias.st status
+    git config --global alias.br branch
+    git config --global alias.hist 'log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
+    git config --global alias.type 'cat-file -t'
+    git config --global alias.dump 'cat-file -p'
+
+比如其中的hist，可以这样做。感受一下：
+
+    git hist -2
+    * e3265bb 2016-01-11 | add ok (HEAD -> master) [1000copy]
+    * f38ef5a 2016-01-11 | add tag (origin/master, origin/HEAD) [1000copy]
 
 现在，文件就从版本库中被删除了。
