@@ -83,9 +83,10 @@ func foo (paramter1,paramter2){
 
 回头看看xcode为我们生成的文件。除了ViewController.swift 之外，还有三个文件值得注意：
 
-1.  AppDelegate.swift 。应用委托。再一次，委托是一个重要的概念。应用委托是应用的入口。代码首先执行到这里，可以在委托内重载启动代码application:didFinishLaunchingWithOptions: ，在这里做窗口初始化、变量初始化等工作。
+1.  AppDelegate.swift 。应用委托。委托是一个重要的概念。应用委托是应用的入口。代码首先执行到这里，可以在委托内重载启动代码application:didFinishLaunchingWithOptions: ，在这里做窗口初始化、变量初始化等工作。
 2.  main.storyboard 。  主要故事版。点击此文件，在这里xcode可以提供功能，让界面的设计变得是可视化的。
 3.  launch.storyboard 。启动故事版。启动后首先显示的一个页面，这个页面会随后自动消失，接着显示main.storyboard中定义的界面。
+4. info.plist 。是 Information Property List Files 的缩写，一个文本文件，内置基本配置信息。可以用来使用 Main storyboard file base name 来指定主要故事版的文件名称。
 
 xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推荐使用 storyboard  做 UI 设计。然而，我认为更好的方式是通过代码创建来。因为：
 
@@ -106,11 +107,9 @@ xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推�
 	        return true
 	    }
 
-就可以了。
+就可以了。如果有洁癖，可以删除这两个默认创建的storyboard了。过程：
 
-然后，如果有洁癖，可以删除这两个默认创建的storyboard了。过程：
-
-1.  在info.plist 去掉对storyboard 的关联。删除两个key ????。
+1.  在info.plist 去掉对storyboard 的关联。删除两个key ？？？？。
 2.  删除 main.storyboard 。  
 3.  删除 launch.storyboard。
 
@@ -135,11 +134,11 @@ https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIControl_
 - 闭包
 - unwrapped（解包）App内会大量使用这两个语法特性。可以让代码更加简洁和安全。
 - optional value（可选值）
-2. UIKit 重要视图介绍。很多很多内容。
-- 容器类 NavigationController、PageController、TagController
+2. UIKit控制器
+   NavigationController、PageController、TagController、TableViewController
+3. UIKit 重要视图介绍。很多很多内容。
 - 视图类 Button 、Label、...
-3. UIKit 事件介绍
-4. ViewController ,MVC
+4. UIKit 事件介绍
 5. Little and Completed App： Todo
 
 而要真正的应用出炉，必然也需要的内容：
@@ -151,3 +150,4 @@ https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIControl_
 - 地理位置
 - 震动
 - 通知
+ ？？？？
