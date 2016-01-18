@@ -2,7 +2,7 @@
 
 每次碰到新的 GUI 编程体系时，我总是有一个Hello 应用。它总是这样的：
 
-1. 首页
+1. 显示首页
 2. 首页上一个按钮
 3. 按钮事件后弹出一个对话页，显示点文字
 
@@ -67,13 +67,17 @@ func foo (paramter1,paramter2){
 
 但是比普通函数有更多好处。比如：
 
-1. 精简
-2. 可以引用当前作用域内的变量
+- 精简
+-  可以引用当前作用域内的变量
 
 实际上，为了更好的理解闭包，我的做法是对比代码。给 OK 按钮加入的handler是闭包的，而给Cancel 加入的handler 则使用普通方法。
 
 现在，我们感受到了第一个app的模样。也浅尝辄止的学习了视图控制器、闭包、Swift类、Swift 
 方法定义、事件定义。我们也知道了UIKit是一个iOS的开发框架。
+7. 留意 UIAlertAction!的“!”。这个符号放在类型后表示类型必须有值，否则停止运行。放置在变量后表示必须变量必须有值，否则停止运行,此过程被称为unwrapped。App内会大量使用这此语法特性。
+7. 有时候“！”位置可以放置"?"，类型后放置？表示可以为nil，变量后放置？表示如果为nil，停止表达式求职，什么也不做。此语法被称为optional value。App内会大量使用此语法特性。
+
+可以在这里下载现成的代码。位置： https://github.com/1000copy/appletech/blob/master/swift/nav/helloswift/doudou/ViewController.swift
 
 ##扩展
 
@@ -85,6 +89,28 @@ func foo (paramter1,paramter2){
 
 https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIControl_Class/index.html#//apple_ref/doc/constant_group/Control_Events
 
-可以在这里下载现成的代码。位置： https://github.com/1000copy/appletech/blob/master/swift/nav/helloswift/doudou/ViewController.swift
 
 
+
+因为这篇文字的引发，要想把故事讲圆，就得把如下的话题列表做进一步展开：
+
+1. 特别的语法特性
+- 闭包
+- unwrapped（解包）App内会大量使用这两个语法特性。可以让代码更加简洁和安全。
+- optional value（可选值）
+2. UIKit 重要视图介绍。很多很多内容。
+- 容器类 NavigationController、PageController、TagController
+- 视图类 Button 、Label、...
+3. UIKit 事件介绍
+4. ViewController ,MVC
+5. Little and Completed App： Todo
+
+而要真正的应用出炉，必然也需要的内容：
+
+1. 网络
+2. 本地存储
+3. 设备事件
+- 旋转
+- 地理位置
+- 震动
+- 通知
