@@ -3,13 +3,12 @@
 1. 首页
 2. 首页上一个按钮，点击后弹出一个对话页，显示点什么
 
-不管是Delphi、还是QT、C#，有了它的完成，就可以熟悉IDE，感觉下语言特点，过一下GUI独特的概念了。现在，我点Swift的名了。
+不管是Delphi、还是QT、C#，我都是这么干的。有了它的完成，就可以熟悉IDE，感觉下语言特点，过一下GUI独特的概念了。现在，我点Swift的名了。
 
 首先，会有些操作工作。是的，烦人的事情总是无法完全避免：
 
-1. 打开xcode
-2.  创建一个Single View App 
-3.  随便找个目录存放，随便取个名字（不过是练手，反正要删掉的）
+1. 打开 xcode ，创建一个 Single View App 
+2. 随便找个目录存放，随便取个名字（不过是练手，反正要删掉的）
 
 xcode 会生成一组文件，我们首先关注的就是它生成的ViewController.swift ，打开后，把代码替换为：
 
@@ -55,6 +54,7 @@ xcode 会生成一组文件，我们首先关注的就是它生成的ViewControl
 	        }
 
 形如：
+
 { (paramter1,paramter2...) in statements }
 
 效果类似这样的方法定义：
@@ -70,7 +70,10 @@ func foo (paramter1,paramter2){
 
 实际上，为了更好的理解闭包，我的做法是对比。给 OK 按钮加入的handler是闭包的，而给Cancel 加入的handler 则使用普通方法。
 
-现在，我们感受到了第一个app的模样。也浅尝辄止的学习了 视图控制器、闭包、Swift类、Swift 方法定义、事件定义。我们知道了UIKit是一个iOS的开发框架。
+现在，我们感受到了第一个app的模样。也浅尝辄止的学习了视图控制器、闭包、Swift类、Swift 方法定义、事件定义。我们也知道了UIKit是一个iOS的开发框架。
+
+视图种类很多，完整的请GOOGLE: uikit user interface catalog 去查看官方文档。
+框架的种类也很多，涵盖UI、Video、Image、Network等。完整的类别可以GOOGLE: iOS frameworks ,查看官方文档。
 
 可以在这里下载现成的代码。位置： https://github.com/1000copy/appletech/blob/master/swift/nav/helloswift/doudou/ViewController.swift
 
