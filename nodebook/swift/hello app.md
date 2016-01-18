@@ -79,6 +79,43 @@ func foo (paramter1,paramter2){
 
 可以在这里下载现成的代码。位置： https://github.com/1000copy/appletech/blob/master/swift/nav/helloswift/doudou/ViewController.swift
 
+## 两种创建UI的模式对比
+
+回头看看xcode为我们生成的文件。除了ViewController.swift 之外，还有三个文件值得注意：
+
+1.  AppDelegate.swift 。应用委托。再一次，委托是一个重要的概念。应用委托是应用的入口。代码首先执行到这里，可以在委托内重载启动代码application:didFinishLaunchingWithOptions: ，在这里做窗口初始化、变量初始化等工作。
+2.  main.storyboard 。  主要故事版。点击此文件，在这里xcode可以提供功能，让界面的设计变得是可视化的。
+3.  launch.storyboard 。启动故事版。启动后首先显示的一个页面，这个页面会随后自动消失，接着显示main.storyboard中定义的界面。
+
+xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推荐使用 storyboard  做 UI 设计。然而，我认为更好的方式是通过代码创建来。因为：
+
+1. 代码在版本之间的重用性高。
+2. 免得学习那些操作（点击、选菜单、选项等），并且这些操作在不同的版本升级通常都会变化。
+3. 代码可以做到一切storyboard的工作。反之则不行。
+4. 其实代码一点也不比典型的拖放控件的方式更麻烦。特别是有了 Autolayout 特性后。
+
+所以，本书内我就是会这样做。
+
+默认情况下，xcode 生成的代码模板使用的就是 storyboard。我们首先切断使用storyboard。打开helloswift 工程，打开AppDelegate内把启动方法替换为：
+
+
+	 func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+	        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+	        self.window!.rootViewController = ViewController()
+	        self.window?.makeKeyAndVisible()
+	        return true
+	    }
+
+就可以了。
+
+然后，如果有洁癖，可以删除这两个默认创建的storyboard了。过程：
+
+1. 在info.plist 去掉对storyboard 的关联。删除两个key ????
+2.  删除 main.storyboard 。  
+3.  删除 launch.storyboard
+
+运行下试试。
+
 ##扩展
 
 视图种类很多，完整的请GOOGLE: uikit user interface catalog 去查看官方文档。
