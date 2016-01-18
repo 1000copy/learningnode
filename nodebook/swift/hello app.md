@@ -96,7 +96,7 @@ xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推�
 
 所以，本书内我就是会这样做。
 
-默认情况下，xcode 生成的代码模板使用的就是 storyboard。我们首先切断使用storyboard。打开helloswift 工程，打开AppDelegate内把启动方法替换为：
+默认情况下，xcode 生成的代码模板使用的就是 storyboard。我们首先切断使用storyboard。打开helloswift 工程，打开AppDelegate.swift 文件，把启动方法替换为：
 
 
 	 func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -110,9 +110,9 @@ xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推�
 
 然后，如果有洁癖，可以删除这两个默认创建的storyboard了。过程：
 
-1. 在info.plist 去掉对storyboard 的关联。删除两个key ????
+1.  在info.plist 去掉对storyboard 的关联。删除两个key ????。
 2.  删除 main.storyboard 。  
-3.  删除 launch.storyboard
+3.  删除 launch.storyboard。
 
 运行下试试。
 
