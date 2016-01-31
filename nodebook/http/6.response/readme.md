@@ -12,7 +12,7 @@
 #状态行（ Status-Line)
 
 由HTTP版本、状态码、状态说明共三个字段构成
-	Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+	Status-Line = HTTP-Version SPACE Status-Code SPACE Reason-Phrase CRLF
 状态说明就是一个给人类阅读的内容，对于处理逻辑并不重要。
 HTTP版本、状态码则直接影响客户端如何处理此响应消息。状态码就是一个三位的数字，用来告知客户端请求的处理结果。第一个位数是一个分类，指明状态码的类型。以此数字把状态码分为5类：
 - 1xx: 信息类 
