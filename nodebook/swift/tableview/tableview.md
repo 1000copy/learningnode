@@ -3,6 +3,8 @@
 
 ## 简单呈现
 
+The table view’s data source provides the cell objects to the table view by implementing the tableView:cellForRowAtIndexPath: method, a required method of the UITableViewDataSource protocol.
+
 
     class LangTable : UITableView,UITableViewDataSource{
         let arr = ["swift","obj-c","ruby"]
