@@ -1,3 +1,8 @@
+
+ref : Apple Developer Guide - A Closer Look at Table View Cells 
+
+tableview_embed 这个案例其实也展示了datasource ,delegate的含义。可谓一网打尽。https://github.com/1000copy/appletech/tree/master/swift/tableview_embed
+
 我们现在希望把一个列表显示在UITableView内。
 这个列表为 ： ["swift","obj-c","ruby"]。我们来详细讨论做法
 
