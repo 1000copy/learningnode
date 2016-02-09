@@ -1,5 +1,10 @@
 tableview events
 
+
+The delegateis a reference to a class (any class) that implements methods that tell the table view how to react to user input, such as tapping or editing.  All of these methods are optional.
+
+The datasourceis a reference to a class (any class) that implements methods that tell the table view how many rows it has, what the content for each row is, what the headers are (if any), sections, footers, etc.  2 of these methods are required, the rest are optional.
+
 使用 delegate 实现事件
 
 ## tap
