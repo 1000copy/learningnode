@@ -258,3 +258,41 @@ Selection management is a 0lso important with selection lists. There are two kin
 }
 
 ## reorder
+
+要显示reorder的控件，必须
+
+1. 在 tableView:cellForRowAtIndexPath:方法内，给cell 设置 .showsReorderControl = true
+2. 实现 tableView:canMoveRowAtIndexPath: ,允许cell 被移动
+3. 实现 tableView:sourceIndexPath:toIndexPath:
+
+任何一个方法没有实现都不会显示的。
+
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let a = UITableViewCell(style: .Default, reuseIdentifier: nil)
+        a.showsReorderControl = true
+        return a
+    }
+    func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool
+    {
+        return true;
+    }
+    func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
+    }
+
+当调用 tableView:sourceIndexPath:toIndexPath: 时，需要把数组内容做一个交换，可以通过这个方法来巧妙的做到：
+
+    func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
+        let f = sourceIndexPath.row
+        let t = destinationIndexPath.row
+        (arr[f], arr[t]) = (arr[t], arr[f])
+    }
+
+调整位置后，可以通过：
+
+    func reordered( b : UIButton!){
+        a!.setEditing(false, animated: true)
+        a?.reloadData()
+    }
+
+完成数据的加载。
+
