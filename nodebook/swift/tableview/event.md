@@ -153,6 +153,56 @@ Selection management is a 0lso important with selection lists. There are two kin
             self.deselectRowAtIndexPath(indexPath, animated: false)
         }
     }
-    
-## edit
+
+## delete
+    class LangTableRowDelete : UITableView,UITableViewDataSource,UITableViewDelegate{
+        var arr = NSMutableArray.init(array: ["java","swift","js"])
+        override init(frame: CGRect, style: UITableViewStyle) {
+            super.init(frame:frame,style:style)
+            self.dataSource = self
+            self.delegate = self
+            
+        }
+        required init?(coder aDecoder: NSCoder) {
+            super.init(coder:aDecoder)
+        }
+        func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return arr.count
+        }
+        
+        func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+            let a = UITableViewCell(style: .Default, reuseIdentifier: nil)
+            a.textLabel?.text = String(arr[indexPath.row])
+            return a
+        }
+        func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+            if editingStyle ==  .Delete{
+                arr.removeObjectAtIndex(indexPath.row) // http://stackoverflow.com/questions/21870680/invalid-update-invalid-number-of-rows-in-section-0
+                self.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
+            }
+        }
+        
+    }
+    class ViewController: UIViewController {
+        var a : UITableView?
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            a  = LangTableRowDelete()
+            a!.frame = CGRectMake(0,200,300,200)
+            self.view.addSubview(a!)
+            let b = UIButton()
+            b.frame = CGRectMake(0,100,300,50)
+            b.setTitle("edit", forState: .Normal)
+            b.backgroundColor = UIColor.redColor()
+            self.view.addSubview(b)
+            b.addTarget(self, action: "edit:", forControlEvents: .TouchDown)
+        }
+        func edit( b : UIButton!){
+            a!.setEditing(true, animated: true)
+        }
+    }
+
+## insert 
+
+
 ## reorder
