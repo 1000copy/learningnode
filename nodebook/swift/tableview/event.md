@@ -259,6 +259,8 @@ Selection management is a 0lso important with selection lists. There are two kin
 
 ## reorder
 
+The reordering control is gray, multiple horizontal bar control on the right side of the cell. Users can drag this control to reorder the cell within the table. The default value is NO. If the value is YES , the reordering control temporarily replaces any accessory view.
+
 要显示reorder的控件，必须
 
 1. 在 tableView:cellForRowAtIndexPath:方法内，给cell 设置 .showsReorderControl = true
