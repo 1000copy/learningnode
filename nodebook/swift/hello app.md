@@ -1,19 +1,25 @@
 ## Swift App 引入
 
-每次碰到新的 GUI 编程体系时，我总是有一个Hello 应用。它总是这样的：
+每次碰到新的 GUI 编程体系时，我总是会从编写一个 Hello 应用开始。它总是这样的：
 
 1. 显示首页
 2. 首页上一个按钮
 3. 按钮事件后弹出一个对话页，显示点文字
 
-不管是Delphi、还是QT、C#，我都是这么干的。有了它的完成，就可以熟悉IDE，感觉下语言特点，过一下GUI独特的概念了。现在，我点Swift的名了。
+完成后我就可以熟悉下IDE，感觉下语言特点，过一下GUI独特的概念了。现在，我点Swift的名了。
 
 首先，会有些操作工作。是的，烦人的事情总是无法完全避免：
 
-1. 打开 xcode ，创建一个 Single View App 
-2. 随便找个目录存放，随便取个名字（不过是练手，反正要删掉的）
+1. 打开 xcode 
+2. 在首页（Choose a template for your new project) 选择创建一个 Single View Application
+3. 第二页（Choose options for your new project )内的 Product Name 随便给个名字（看你喜爱就好），其他都用默认值，但是记得Language一定选择Swift。
+4. 第三页 选择一个目录存放你的工程。这个你自己决定，反正我给出的代码，你玩够了都可以删除的。 
 
-xcode 会生成一组文件，我们首先关注的就是它生成的ViewController.swift ，打开后，把代码替换为：
+完成。
+
+整个创建过程是比较啰嗦的，幸运的是我们只需要学习这一次。因此本书之后任何的一个案例无任何特殊说明的话，都是使用一样的创建过程。
+
+xcode 会生成一组文件，我们首先关注的就是它生成的ViewController.swift 。打开此文件，把代码替换为：
 
 	import UIKit
 	
@@ -21,7 +27,6 @@ xcode 会生成一组文件，我们首先关注的就是它生成的ViewControl
 	
 	    override func viewDidLoad() {
 	        super.viewDidLoad()
-	//        let button = UIButton(frame: CGRect(x: 10,y: 50,width: 200,height: 50))
 	        let button = UIButton()
 	        button.frame = CGRectMake(10,50,200,50)
 	        self.view.addSubview(button)
@@ -30,7 +35,7 @@ xcode 会生成一组文件，我们首先关注的就是它生成的ViewControl
 	        button.addTarget(self, action: "clickme:", forControlEvents: .TouchDown)
 	    }
 	    func clickme(sender:UIButton!){
-	        let alert = UIAlertController(title: "Hi", message: "I am doudou", preferredStyle:.Alert)
+	        let alert = UIAlertController(title: "Hi", message: "I am message", preferredStyle:.Alert)
 	        // Closure
 	        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { (action: UIAlertAction!) in
 	            print("OK")
@@ -77,9 +82,7 @@ func foo (paramter1,paramter2){
 7. 留意 UIAlertAction!的“!”。这个符号放在类型后表示类型必须有值，否则停止运行。放置在变量后表示必须变量必须有值，否则停止运行,此过程被称为unwrapped。App内会大量使用这此语法特性。
 7. 有时候“！”位置可以放置"?"，类型后放置？表示可以为nil，变量后放置？表示如果为nil，停止表达式求职，什么也不做。此语法被称为optional value。App内会大量使用此语法特性。
 
-可以在这里下载现成的代码。位置： https://github.com/1000copy/appletech/blob/master/swift/nav/helloswift/doudou/ViewController.swift
-
-## 两种创建UI的模式对比
+## 回顾
 
 回头看看xcode为我们生成的文件。除了ViewController.swift 之外，还有三个文件值得注意：
 
@@ -88,17 +91,30 @@ func foo (paramter1,paramter2){
 3.  launch.storyboard 。启动故事版。启动后首先显示的一个页面，这个页面会随后自动消失，接着显示main.storyboard中定义的界面。
 4. info.plist 。是 Information Property List Files 的缩写，一个文本文件，内置基本配置信息。可以用来使用 Main storyboard file base name 来指定主要故事版的文件名称。
 
-xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推荐使用 storyboard  做 UI 设计。然而，我认为更好的方式是通过代码创建来。因为：
+xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推荐使用 storyboard  做 UI 设计。看得出来 ，可视化设计是iOS开发的推荐方案。
+
+##两种创建UI的模式对比
+
+然而，我认为更好的方式是通过代码创建来。因为：
 
 1. 代码在版本之间的重用性高。
 2. 免得学习那些操作（点击、选菜单、选项等），并且这些操作在不同的版本升级通常都会变化。
 3. 代码可以做到一切storyboard的工作。反之则不行。
 4. 其实代码一点也不比典型的拖放控件的方式更麻烦。特别是有了 Autolayout 特性后。
 
-所以，本书内我就是会这样做。
+所以，本书内我就是会这样做。大部分情况下，我都会使用之前提到的创建工程过程，完成操作后，直接从ViewController.swift 开始我们的代码编写过程。
 
-默认情况下，xcode 生成的代码模板使用的就是 storyboard。我们首先切断使用storyboard。打开helloswift 工程，打开AppDelegate.swift 文件，把启动方法替换为：
+## 根除 storyboard 
 
+因此，我一般并不管 storyboard 。我不在乎它们的存在，也不会因为它们的存在而使用它们，我只是忽略它们。
+
+但是如果你有洁癖，可能根本不想容忍一个并不起到实际作用的元素存在于自己的工程中的话，那么，这也是可以做到的：
+
+1.  在info.plist 去掉对storyboard 的关联。删除两个key 名字为 ：Main story board file base name ,Launch screen interface file base name 的条目。
+2.  删除 main.storyboard 文件。  
+3.  删除 launch.storyboard 文件。
+3.  自己创建 ViewController 。
+打开helloswift 工程，打开AppDelegate.swift 文件，把启动方法替换为：
 
 	 func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
 	        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
@@ -107,47 +123,6 @@ xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推�
 	        return true
 	    }
 
-就可以了。如果有洁癖，可以删除这两个默认创建的storyboard了。过程：
-
-1.  在info.plist 去掉对storyboard 的关联。删除两个key ？？？？。
-2.  删除 main.storyboard 。  
-3.  删除 launch.storyboard。
-
 运行下试试。
 
-##扩展
 
-视图种类很多，完整的请GOOGLE: uikit user interface catalog 去查看官方文档。
-
-框架的种类也很多，涵盖UI、Video、Image、Network等。我们也知道在iOS内，完整的类别可以GOOGLE: iOS frameworks ,查看官方文档。
-
-我们使用到了TouchDown事件。同时还有更多的Touch事件。可以 GOOGLE: UIControl  Events
-
-https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIControl_Class/index.html#//apple_ref/doc/constant_group/Control_Events
-
-
-
-
-因为这篇文字的引发，要想把故事讲圆，就得把如下的话题列表做进一步展开：
-
-1. 特别的语法特性
-- 闭包
-- unwrapped（解包）App内会大量使用这两个语法特性。可以让代码更加简洁和安全。
-- optional value（可选值）
-2. UIKit控制器
-   NavigationController、PageController、TagController、TableViewController
-3. UIKit 重要视图介绍。很多很多内容。
-- 视图类 Button 、Label、...
-4. UIKit 事件介绍
-5. Little and Completed App： Todo
-
-而要真正的应用出炉，必然也需要的内容：
-
-1. 网络
-2. 本地存储
-3. 设备事件
-- 旋转
-- 地理位置
-- 震动
-- 通知
- ？？？？
