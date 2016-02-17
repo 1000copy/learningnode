@@ -1,6 +1,6 @@
 ## Swift App 引入
 
-每次碰到新的 GUI 编程体系时，我总是会从编写一个 Hello 应用开始。它总是这样的：
+每次碰到新的 GUI 编程体系时，我总是会从编写一个 Hello 应用开始。它总是这个模样的：
 
 1. 显示首页
 2. 首页上一个按钮
@@ -10,9 +10,9 @@
 
 首先，会有些操作工作。是的，烦人的事情总是无法完全避免：
 
-1. 打开 xcode 
+1. 打开 xcode ,点击左下角的 Create a new xcode project
 2. 在首页（Choose a template for your new project) 选择创建一个 Single View Application
-3. 第二页（Choose options for your new project )内的 Product Name 随便给个名字（看你喜爱就好），其他都用默认值，但是记得Language一定选择Swift。
+3. 第二页（Choose options for your new project )内的 Product Name 随便给个名字（看你喜爱就好），其他都用默认值，但是记得Language一定选择Swift，并且去掉勾选 Core Data。
 4. 第三页 选择一个目录存放你的工程。这个你自己决定，反正我给出的代码，你玩够了都可以删除的。 
 
 完成。
