@@ -1,6 +1,6 @@
 ##  UITabBarController
 
-UITabBarController 是一个特别的 ViewController。它在底部显示一个tab bar（标签条）用于单选，每一个tab 对应一个 ViewController 。 系统的闹钟程序就是此 ViewController 的一个案例。UITabBarController通常作为整个程序的 RootViewController，而且不能添加到别的 Container ViewController中。
+UITabBarController 是一个特别的 ViewController。它在底部显示一个tab bar（标签条）用于单选，每一个tab 对应一个 ViewController 。系统的闹钟程序（时间App）就是它的一个案例。
 
 我们准备做一个最简单的 TabBar 案例 : 它只有两个 tab,分别对应一个 ViewController，点击任何一个 tab 都会显示对应的 ViewController的内容。为了区别，ViewController 内有一个文字标签，内容分别为 #1，#2 。当点击第一个tab时，显示视图控制器vc1的视图，当点击第二个tab时，显示视图控制器vc2的视图。截图是这样的：
 
