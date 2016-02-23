@@ -19,7 +19,7 @@
 
 整个创建过程是比较啰嗦的，幸运的是我们只需要学习这一次。因此本书之后任何的一个案例无任何特殊说明的话，都是使用一样的创建过程。
 
-xcode 会生成一组文件，我们首先关注的就是它生成的ViewController.swift 。打开此文件，把代码替换为：
+xcode 会生成一组文件，我们首先关注的就是它生成的 ViewController.swift 。打开此文件，把代码替换为：
 
 	import UIKit
 	
@@ -123,6 +123,28 @@ xcode 一口气给我们生成了两个 storyboard ，在官方文档中也推�
 	        return true
 	    }
 
-运行下试试。
+也就是说，如下的代码作为 appdelegate.swift 内容，在执行效果上等同于使用 xcode 的 Single Page Application 生成的一组代码文件的效果：
+
+	
+	import UIKit
+
+	class ViewController : UIViewController {
+	    override func viewDidLoad() {
+	        super.viewDidLoad()
+	    }
+	}
+
+	@UIApplicationMain
+	class AppDelegate: UIResponder, UIApplicationDelegate {
+	    var window: UIWindow?
+	    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+	        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+	        self.window!.rootViewController = ViewController()
+	        self.window?.makeKeyAndVisible()
+	        return true
+	    }
+	}
+
+可以自己对比下自动生成的代码，和纯粹使用代码的方式，哪种风格是你更加喜欢的。
 
 
