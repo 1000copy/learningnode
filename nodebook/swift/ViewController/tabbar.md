@@ -4,7 +4,7 @@ UITabBarController 是一个特别的 ViewController。它在底部显示一个t
 
 我们准备做一个最简单的 TabBar 案例 : 它只有两个 tab,分别对应一个 ViewController，点击任何一个 tab 都会显示对应的 ViewController的内容。为了区别，ViewController 内有一个文字标签，内容分别为 #1，#2 。当点击第一个tab时，显示视图控制器vc1的视图，当点击第二个tab时，显示视图控制器vc2的视图。截图是这样的：
 
-[tab bar](tabbar.png)
+![tab bar](tabbar.png)
 
 ## 代码 
     
