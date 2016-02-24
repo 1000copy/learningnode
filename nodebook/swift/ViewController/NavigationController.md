@@ -11,7 +11,7 @@ UINavigationController 会在UI上方占据一个条形区域，此条形区域�
 
 我们将编写一个演示目的的app，以便进一步厘清以上内容。界面截图的首页如下：
 
-![navigationcontroll](navigationcontroll.png)
+![navigationcontroller](navigationcontroller.png)
 
 创建了swift 的Single Page App 后，打开 AppDelegate.swift ,删除全部原有代码，替换为一下代码，即可执行查看效果。
 
