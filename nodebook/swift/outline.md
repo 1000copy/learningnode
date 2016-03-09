@@ -1,7 +1,41 @@
-Creating A Blank Project Template
-https://github.com/1000copy/Empty-Application.xctemplate
+## size class programatically
 
-MORE:
+reading
+
+    Auto Layout 101
+    https://www.weheartswift.com/auto-layout-101/
+    Introduction to Auto Layout
+    http://www.appcoda.com/introduction-auto-layout/
+
+autosize masks
+
+    You are no doubt familiar with autosizing masks – also known as the “springs and struts” model. The autosizing mask determines what happens to a view when its superview changes size. 
+
+
+
+    iOS 8 introduces the active property on NSLayoutConstraint. It allows you to activate or deactivate a constraint. There are also methods to activate/deactivate multiple constraints.
+
+    + (void)activateConstraints:(NSArray *)constraints
+    + (void)deactivateConstraints:(NSArray *)constraints
+    Keep your constraints in arrays when creating them programmatically.
+    Create an array for each of the layouts you need.
+    Activate/Deactivate whatever set of constraints you need from within willTransitionToTraitCollection
+
+type of  Layout contraints
+
+    There are several types of constraints:
+
+    size constraints – ex. an image should have a width of 200
+    alignment constraints – a label should be centred vertically on the screen
+    spacing constraints – space between two labels or between a view and the margin of the screen
+
+What’s the purpose of constraints?
+
+    In the end by solving the given set of constraints, Auto Layout will determine the frame for each view in your screen. So each view should have a constraints that will help determine its width, height, x and y position. There are a few exceptions but we are going to get into them later.
+
+http://stackoverflow.com/questions/26363057/set-autolayout-size-class-programatically
+
+
 网络 -本地存储 - 设备事件- 旋转- 地理位置- 震动- 通知 - iAD
 
 TASK : iOS 内置的app：时间  。一个很好的练习题目
@@ -12,36 +46,5 @@ TASK : Little and Completed App： Todo
 GOOGLE: Centering a view in a super view with visual format language using Auto Layout in iOS/Swift
 GOOGLE: Centering view with visual format NSLayoutConstraints
 
-# 官方文档
 
-GOOGLE: About Events in iOS
-GOOGLE: Start Developing iOS Apps (Swift) 
-GOOGLE : Presenting a View Controller
-GOOGLE :  UIViewController Class Reference
-GOOGLE: view controller programming guide for ios
-GOOGLE: uikit user interface catalog
-GOOGLE: view controller catalog for ios
-GOOGLE:UIKit Framework Reference
-GOOGLE：NavigationController
-GOOGLE：TabViewController
-GOOGLE: Visual Format Language
-GOOGLE：PageViewController 
-http://www.appcoda.com/uipageviewcontroller-tutorial-intro/
-
-GOOGLE：Table View Programming Guide for iOS.
-GOOGLE： UITableViewCell Class Reference
-
-GOOGLE: Learning Swift: Optional Types - don't panic
-GOOGLE: A Closer Look at Table View Cells 
-GOOGLE: SWIFT | Adding constraints programmatically
-GOOGLE: Understanding Auto Layout 2016-01-07
-GOOGLE:Adaptive UI in iOS 8: Explained
-STACKOVERFLOW:Creating a navigationController programatically (Swift)
-GOOGEL : WEAK, STRONG, UNOWNED, 老天爷
-
-#BOOK 
-
-Swift与Cocoa框架开发
-精通iOS开发（第7版） 
-Swift 编程语言指南（非官方译本）
 
