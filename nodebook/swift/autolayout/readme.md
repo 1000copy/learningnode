@@ -9,7 +9,7 @@
 
 假设我们要在左下角放置一个按钮，和左边距为10，和下边距为10，那么，我们如何描述它的位置？一种方法是我们自己计算按钮的frame 位置。另外一种方法是我们描述位置关系，由 Autolayout 来计算对应的 frame。
 
-自动布局（Autolayout）确实提供了一种表达两个视图的关系的公式。根据这些约束，Autolayout可以计算出视图的 frame 。
+自动布局（Autolayout）提供了一种表达两个视图的位置关系的公式。
 
     Item1.property1 = Multiplier *  Item2.Property2 + Constant 
 
