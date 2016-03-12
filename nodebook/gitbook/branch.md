@@ -72,6 +72,14 @@ git merge命令用于合并指定分支到当前分支。
 
 ##解决冲突
 
+两个分支修改同一行代码，那么在合并分支的时候，就会引发冲突。
+
+修改文本文件内容，我准备使用sed命令。比如
+
+    sed -i.bak  's/line1/lineI/' file1
+就可以把Line1修改为lineI。对sed不熟悉的可以看附录，有介绍。
+
+
 ###准备新的 feature1 分支
 
     $ git checkout -b feature1
@@ -84,24 +92,16 @@ git merge命令用于合并指定分支到当前分支。
 ###提交：
 
     $ git add file1 && git commit -m "line1"
-    [feature1 6ec678c] line1
-     1 file changed, 1 insertion(+), 3 deletions(-)
-
-###切换到master分支：
+    
+###切换到master分支。修改文件内容，提交：
 
     $ git checkout master
-    Switched to branch 'master'
-    Your branch is ahead of 'origin/master' by 1 commit.
 
 
-###修改 
+    $ echo lineone > file1 && git commit -m "lineone" -a
+    
 
-    echo lineone > file1 && git commit -m "lineone" -a
-    [master 2cf0051] lineone
-     1 file changed, 1 insertion(+), 3 deletions(-)
-
-
-##合并冲突了
+##合并。冲突产生
 
     $ git merge feature1
     Auto-merging file1
@@ -122,3 +122,34 @@ git merge命令用于合并指定分支到当前分支。
     [master c98d7b9] conflict solved
 
 
+## 附录：sed 介绍。
+
+1. man sed
+2. http://askubuntu.com/questions/490763/add-edit-line-text-in-file-without-open-editor-linux-command
+
+
+我不准备使用编辑器去编辑，而是依然使用命令行来做这样演示，好处是语义化，只要看命令就知道在做什么，不需要啰嗦的去讲操作过程（点击菜单1，在弹出的对话框内填写，点击确定...）。这个命令是sed。语法是：
+
+
+    sed -i 's/oldstring/newstring/g' filename
+
+解释:
+
+    sed = Stream EDitor
+    -i = in-place (i.e. save back to the original file)
+    The command string:
+
+    s = the substitute command
+    original = a regular expression describing the word to replace (or just the word itself)
+    new = the text to replace it with
+    g = global (i.e. replace all and not just the first occurrence)
+    file.txt = the file name
+
+比如说
+
+    sed -i 's/line1/lineI/g' file1
+
+就可以把第一行代码从Line1改成LineI。在OS X上命令需要稍作修改：
+
+    sed -i.bak  's/line1/lineI/' file1
+因为OS X 要求inplace修改文件必须指定备份文件的扩展名。

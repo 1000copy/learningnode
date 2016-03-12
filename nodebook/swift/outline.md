@@ -1,4 +1,10 @@
 ## size class programatically
+constraint issue.
+
+    Align – Create alignment constraints, such as aligning the left edges of two views.
+    Pin – Create spacing constraints, such as defining the width of a UI control.
+    Issues – Resolve layout issues.
+    Resizing – Specify how resizing affects constraints.
 
 reading
 
