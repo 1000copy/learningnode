@@ -1,9 +1,11 @@
 #git reset 
 
-git add <file> 之后，文件会被加入暂存区。去过想要撤销此暂存，可以使用git reset <file>。就是说，git reset 是 git add 的反向操作。
-#实验：
+git add <file> 之后，文件会被加入暂存区。去过想要撤销此暂存，可以使用git reset <file>。就是说，git reset  <file>是 git add  <file> 的反向操作。
+
+#实验
+
 echo line1 > file
-git add file
+git add file 
 git status -s
 可以看到输出
 A  file
