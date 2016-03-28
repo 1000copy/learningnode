@@ -105,3 +105,37 @@ Date:   Sun Mar 27 16:24:12 2016 +0800
     init
 
 我们可以看到，一次修改确实变成了两次提交历史。
+
+##实验：stage 概念的澄清
+
+
+创建file2
+
+    echo -en "line1\n" > file2 && cat file2 
+    line1
+
+添加
+
+    $ git add file2
+    $ git status -s
+    M:   readme.txt
+
+然后，再修改
+
+    echo -en "line2\n" >> file2 && cat file2 
+    line1
+    line2
+
+提交：
+
+    $ git commit -m"stage testcase"
+    [master d4f25b6] git tracks changes
+     1 file changed, 1 insertion(+)
+
+提交后，再看看状态
+
+    $git status -s
+    M:   file2
+
+怎么还是修改状态? 第一个修改是提交到了暂存区，因此提交了，第二次修没有提交到暂存区，因此没有提交。
+

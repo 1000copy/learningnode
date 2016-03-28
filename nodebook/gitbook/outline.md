@@ -17,32 +17,11 @@ $ git checkout dev && git stash pop && cat f
 something
 WIP
 
-## 记忆github密码的方法
 
-git 可以通过设置 credential.helper 值来使用不同的存储设施保存远端仓库的访问用户名和密码。
-
-在windows系统上，把 credential.helper设置为  wincred 即可（要求版本为1.7.9以上）
-
-    git config --global credential.helper
-
-在 mac 系统上，可以这样做:
-
-    git config --global credential.helper osxkeychain
-
-## git config reset ?
-
-vim ~/.gitconfig
 
 
 ###疑难
 
-为何Git不能一次被文件提交，而需要分两步（add，commit）？
-
-因为commit可以一次提交很多文件，所以你可以多次add不同的文件，就是为了选择文件时可以更加灵活。比如：
-
-    $ git add file1.txt
-    $ git add file2.txt file3.txt
-    $ git commit -m "add 3 files."
 ## 开始一时提交不了，但是要求临时改bug 
 
 echo something >f && cat  f & git add f  && git commit -m"something"
@@ -60,11 +39,7 @@ $ git checkout master && git merge bug001 & cat f && git commit -m"merge bug001"
 $ git checkout dev && git stash pop && cat f
 something
 WIP
-## 打一个新标签 
 
-$ git tag v1.0
-$ git tag
-v1.0
 
 ## 配置别名，会方便很多
 
@@ -85,38 +60,6 @@ v1.0
 现在，文件就从版本库中被删除了。
 
 
-##实验：stage 概念的澄清
-
-
-## 创建file2
-
-    echo -en "line1\n" > file2 && cat file2 
-    line1
-
-##添加
-
-    $ git add file2
-    $ git status -s
-    M:   readme.txt
-
-##然后，再修改
-
-    echo -en "line2\n" >> file2 && cat file2 
-    line1
-    line2
-
-##提交：
-
-    $ git commit -m"stage testcase"
-    [master d4f25b6] git tracks changes
-     1 file changed, 1 insertion(+)
-
-## 提交后，再看看状态
-
-    $git status -s
-    M:   file2
-
-怎么还是修改状态? 第一个修改是提交到了暂存区，因此提交了，第二次修没有提交到暂存区，因此没有提交。
 
 
 ### 来点概念
