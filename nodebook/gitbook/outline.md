@@ -61,46 +61,13 @@ WIP
 
 
 
+## 回到过去《需要实验验证》
 
-### 来点概念
+某天，你的代码出现了bug，但是你不知道到底哪行代码惹出来的事儿，可是你之前的一个提交时对的。于是想回到那个提交看看代码的差别。那么可以使用git checkout <commit id>回到指定的版本。可以在指定的commit id出开出分支继续开发。commit id在哪里查询？使用 git log 。
 
-一个速成的git 仓库已经构建：repo已经创建、文件版本已被跟踪，版本已经可供查询。现在我们来点抽象的概念。计算机怪杰的命令表象下，肯定必须有思想啊。
+当然，此时git总是提示你 
 
-留意到一个重要的概念：stage。git提交文件到仓库，不是直接提交，而是经由stage的。通过git add或者git stage把文件添加到stage。而git commit 提交的只能是已经处于stage的文件。
+    HEAD detached at xxx
 
-这个stage就像购物车，你拿到商品不是直接结订单，而是经由购物车，挑挑选选，然后去结账。 stage也是。本来是有驿站，或者驿站马车的意思。当然，它还叫index，还叫cache，使用一个新的词表达新的概念，使用stage比index和cached强，后两者过于含糊。由此可见，在计算机怪杰的心中，此处也是一片混乱，怎么方便怎么来的：）。无论如何，翻译成“暂存”是不科学的。驿站都要好很多。
+可以可以使用git checkout master ，重新回到主干，重新回到原来的开发点。
 
-有了stage，当然可以更容易的挑挑拣拣。你可以轻轻松松的完成这样的挑拣过程：
-
-    我这次修改了file1,file2,file3，把它们全部加入stage进来(git add .)；哦，对了，file3尽管修改了，但是和file1，file2不同，前者是解决一个bug，后者是提供一个feature。这样的话，我为了以后查阅方便，应该分两次提交，把file3拿出来(git rm --cached file3)，把1,2作为feature big deal 提交，然后把file3拿进来(git add file3),提交为bug 001 。Congratulation ！搞定。 
-
-这就是stage的价值。所以，git是鼓励你使用stage的。
-
-然而，作为电脑怪杰，一切主张都可变通，一切规范都是障眼法。如果你知道你在做什么，他就不拦着你。它也会支持你忽略stage，直接commit。代价也不高就是加一个 -a 参数。只要你的文件是已经被跟踪的，就可以这样做，一步搞定。
-
-前面提到在查询状态是，A字母表示added。还有更多缩写：
-
-    ' ' = unmodified
-    M = modified
-    A = added
-    D = deleted
-    R = renamed
-    C = copied
-    U = updated but unmerged
-
-这些魔术字母经过一段时间的使用后，内化为大脑的一个画面。于是，可以大大降低怪杰们的眼球识别负担，不必看单词，只要一个字母就可以知道是什么状态。
-
-### 实验：把add和commit合并一步
-
-修改文件
-
-    echo -en "\nline2" >> file1 && cat file1
-    line1
-    line2
-    
-提交
-    $ git commit -m"line2"  -a
-    [master 239b523] line2
-     1 file changed, 2 insertions(+), 1 deletion(-)
-
-如果想要把add和commit合二为一，可以在commit命令后加入-a选项。

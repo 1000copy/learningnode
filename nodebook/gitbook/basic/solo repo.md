@@ -58,9 +58,24 @@ git 会提示 Repo 已经建立（repository)。
     $ git add file1
     $ git status -s 
     A file1
-大写字母A标志为 added 的缩写。现在，我们知道 
-可以知道file1 已经准备好提交了。
 
+大写字母A标志为 added 的缩写。
+
+在查询状态是，A字母表示added。还有更多缩写：
+
+    ' ' = unmodified
+    M = modified
+    A = added
+    D = deleted
+    R = renamed
+    C = copied
+    U = updated but unmerged
+
+这些魔术字母经过一段时间的使用后，内化为大脑的一个画面。于是，可以大大降低怪杰们的眼球识别负担，不必看单词，只要一个字母就可以知道是什么状态。
+
+现在，我们可以知道file1 已经准备好提交了。
+
+留意到一个重要的概念：stage。git提交文件到仓库，不是直接提交，而是经由stage的。通过git add把文件添加到stage。而git commit 提交的只能是已经处于stage的文件。
 
 ### 可以做撤销操作。把文件添加到暂存区这个操作做撤销
 
@@ -147,57 +162,23 @@ $ git log
     git checkout 之后，回复到前一个版本，依然是两行代码。
 
 
+一个速成的git 仓库已经构建：repo已经创建、文件版本已被跟踪，版本已经可供查询。
 
 
-## 标签
 
-git 标签用于版本标记，比如发出版本1.0 后就可以打个标签，这样以后如果需要1.0当时的代码，可以checkout它出来，修改此版本的bug就比较容易了。
+### 实验：把add和commit合并一步
 
-## 打一个新标签 
+修改文件
 
-$ git tag v1.0
+    echo -en "\nline2" >> file1 && cat file1
+    line1
+    line2
+    
+提交
+    $ git commit -m"line2"  -a
 
-可以执行
-    $ git tag
+如果想要把add和commit合二为一，可以在commit命令后加入-a选项。
 
-输出从而查看标签清单。
-
-    v1.0
-
-假设我们继续修改文件，并且提交
-
-    echo line3 >> file1
-    git add file1
-    git commit -m"commit 3" 
-
-正在修改的不亦乐乎，但是此时有客户反馈说使用的1.0有错，你得获得1.0的代码来修改，以便解决bug。那么就可以修改bug，比如把line1 修改为lineI：
-
-    git checkout tags/v1.0
-    git checkout -b bugfix
-    sed -i.bak 's/line1/lineI' file1
-    git add file1
-    git commit -m"bug fix"
-
-对 v1.0 的 bug 修改在分支bugfix内。如果测试通过，你完全可能会考虑把此分支的修改成果合并到主干上，而不必在主干上重复修改此bug ，那么就可以使用合并。
-
-    git merge bugfix    
-现在对bugfix的修改也同时反映到master上：
-
-    $ cat file1
-    lineI
-    lineII
-    line3
-
-
-## 回到过去《需要实验验证》
-
-某天，你的代码出现了bug，但是你不知道到底哪行代码惹出来的事儿，可是你之前的一个提交时对的。于是想回到那个提交看看代码的差别。那么可以使用git checkout <commit id>回到指定的版本。可以在指定的commit id出开出分支继续开发。commit id在哪里查询？使用 git log 。
-
-当然，此时git总是提示你 
-
-    HEAD detached at xxx
-
-可以可以使用git checkout master ，重新回到主干，重新回到原来的开发点。
 
 
 
