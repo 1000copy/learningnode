@@ -1,27 +1,25 @@
-## 附录：sed 介绍。
+## 工具
 
-我不准备使用编辑器去编辑，而是依然使用命令行来做这样演示，好处是语义化，只要看命令就知道在做什么，不需要啰嗦的去讲操作过程（点击菜单1，在弹出的对话框内填写，点击确定...）。这个命令是sed。语法是：
+为了演示git的能力和方法，我常常会使用形如
 
-    sed -i 's/oldstring/newstring/g' filename
+    Line1
+    Line2
+    Line3
 
-解释:
+这样的内容文件来做场景内容。对它们的是需要创建和修改的。这些工对我会尽可能的使用命令行完成。具体的话就是echo命令和sed命令。
 
-    sed = Stream EDitor
-    -i = in-place (i.e. save back to the original file)
-    The command string:
+比如创建如上的内容，假设文件名为file，那么
 
-    s = the substitute command
-    original = a regular expression describing the word to replace (or just the word itself)
-    new = the text to replace it with
-    g = global (i.e. replace all and not just the first occurrence)
-    file.txt = the file name
+echo Line1 > file
+echo Line2 >> file
+echo Line3 >> file
 
-比如说
+即可完成。echo 命令会把随后的内容写入 ">“ 之后指定的文件，如果没有就创建，否则覆盖，如果使用 ”>>“(正如第二行的命令行一样)，那么就会在尾部添加内容。对于此命令行，你只需要了解这么多即可。
 
-    sed -i 's/line1/lineI/g' file1
+如果涉及到修改文件（这是一个常用操作）我不准备使用编辑器去编辑，而是依然使用命令行来做这样演示）。这个命令是sed。比如说为要修改Line1为LineI，那么只要：
 
-就可以把代码中的所有 Line1 改成 LineI 。在OS X上此命令需要稍作修改，在-i参数后制定文件扩展名：
+    sed -i.bak 's/line1/lineI/g' file
 
-    sed -i.bak  's/line1/lineI/' file1
+就可以了。sed 是 Stream EDitor 的缩写，可以对文件和流做修改。具体的语法和使用请查询 man sed 。我实验时用的是OS X。Linux 也一样，不同之处在于，可以不写备份文件扩展名。作为读者，你只要学会这一点点，就可以一目了然的、精确的复现我的测试，而不必啰嗦的阅读去讲操作过程。什么是操作过程？“点击菜单1，在弹出的对话框内填写，点击确定...”，就是这样。至于我嘛，我就不必写这些啰嗦的内容了。
 
-因为OS X 要求inplace修改文件必须指定备份文件的扩展名，并使用此扩展名为被修改文件制作备份文件。
+所以，命令行不但是看起来很酷，也是非常高效的、简明的，专业人员喜爱的工具。 
