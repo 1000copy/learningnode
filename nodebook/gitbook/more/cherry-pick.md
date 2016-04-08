@@ -1,0 +1,67 @@
+## cheery-pick
+
+git-cheery-pick 命令可以把一个分支的一个提交应用到另外一个分支上。和git-merge、git-rebase 相比，后者是把整个一个分支（而不是单独的提交）应用到另外一个分支上。
+
+## 构建实验环境
+
+我们在master分支上做两次提交，然后创建并切换到roma分支，随后做两次提交，在切换回到master分支，做一次提交。
+
+    git init 
+    echo line1 > file1
+    git add .
+    git commit -m"r"
+
+    git checkout -b roma
+
+    echo lineI >> file1
+    git commit -m"rI" -a
+
+    echo lineII >> file1
+    git commit -m"rII" -a
+
+    echo lineIII >> file1
+    git commit -m"rIII" -a
+
+    git checkout  master
+
+    echo line2 >> file1
+    git commit -m"r1" -a
+    
+    echo line3 >> file1
+    git commit -m"r2" -a
+
+于是我们现在有了两个分支。我们可以通过查看历史验证此结果：
+
+    $ git log --oneline
+    7203735 r2
+    07e23fb r1
+    1cc0f94 r
+    $ git checkout roma
+    
+    $ git log --oneline
+    48e0cf8 rII
+    420be32 rII
+    22f42e4 rI
+    1cc0f94 r
+
+现在cherry-pick 出场。执行：
+    git checkout master
+    git cherry-pick aca5487
+
+
+然后查看文件：
+
+    $ cat file1
+    line1
+    <<<<<<< HEAD
+    line2
+    line3
+    =======
+    lineI
+    lineII
+    >>>>>>> aca5487... rII
+
+cherry-pick 只是把 aca5487 提交涉及的修改（而不是整个分支）应用到当前分支 master 之上
+
+现在我们遇到的冲突，做法和以往处理冲突的做法是一样的。这里就不继续演示了。
+
