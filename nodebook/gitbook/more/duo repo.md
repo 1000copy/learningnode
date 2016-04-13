@@ -111,6 +111,8 @@ git-pull命令的第一个参数是一个目录名，它指向了共享仓库rep
     git remote remove origin
     git remote add upstream /Users/lcjun/git/repo.git
 
+当然，实际上我们可以继续使用origin，只是因为这是一个很好的命名惯例。
+
 然后我们可以查看下文件修改：
 
     cat file1
