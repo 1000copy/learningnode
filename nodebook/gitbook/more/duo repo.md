@@ -96,8 +96,22 @@ git的多用户协作，其实就是多个仓库拉取和推送修改。我们�
 
 用户A进入自己的仓库，然后拉取变化：
 
-    git remote add origin /Users/lcjun/git/repo.git
+    git pull /Users/lcjun/git/repo.git  master
+
+git-pull命令的第一个参数是一个目录名，它指向了共享仓库repo.git 。第二个参数是分支名称。于是git-pull 知道从指定的仓库拉取指定的分支更新。然而目录名称太长，实际上不好用，因此git允许通过git-remote给它一个别名。
+
+     git remote add origin /Users/lcjun/git/repo.git
+
+随后，你就可以使用 origin 来指代 /Users/lcjun/git/repo.git 了。
+
     git pull origin master
+
+这里的参数 origin 并无特别之处，你可以随便给它一个名字，只要好记即可。如果你发现不喜欢origin，可以删除它后给它一个新名字，比如upstream：
+
+    git remote remove origin
+    git remote add upstream /Users/lcjun/git/repo.git
+
+然后我们可以查看下文件修改：
 
     cat file1
 输出：
@@ -113,7 +127,6 @@ git的多用户协作，其实就是多个仓库拉取和推送修改。我们�
     * eaefe76 2016-04-13 | r2 (HEAD -> master, origin/master) [b]
     * c554f06 2016-04-13 | r1 [a] 
 
-
-
+我们以一台电脑上模拟两个用户的协作，其中涉及的推送和拉取的概念，也适用于其他类型的共享仓库。
 
 
