@@ -1,44 +1,5 @@
-## 多仓库
-
-git的多用户协作，其实就是多个仓库拉取和推送修改。我们就来试试就是两人协作：
-
-1. 创建两个用户A、B，二个仓库repo1、repo2
-2. 创建一个共享仓库repo
-3. 用户A修改后，推送到repo
-4. 用户B从共享仓库拉取更新
-
-为了简化问题，我们使用一台电脑上模拟两个用户和对应的仓库。
-
-## 实验
-
-首先创建一个仓库、其中仅有一个文件，作为实验基础。首先建立并进入一个空目录。随后我们创建目录repo1作为原始仓库。
-
-    
-    mkdir repo1
-    cd repo1
-    git init 
-
-首先我们创建用户A。它是一个局部用户，仅仅用于当前仓库：
-
-    git config  user.name "a"
-    git config  user.email "a@whatever.com"
-
-以用户A的身份，提交r1,r2 :
-
-    echo line1 > file1
-    git add .
-    git commit -m"r1"
-
-    echo line2 >> file1
-    git commit -m"r2" -a
-
-创建一个共享仓库：
-    cd ..
-    git clone --bare repo1 repo.git
- 
-这里的参数 --bare 指定克隆后的仓库仅仅用于共享，有了这个参数的主要差别就是克隆后的仓库是没有工作目录的。
-
-建立repo2仓库。方法就是克隆共享仓库repo：
+==========带分支的仓库
+然后我们为B 建立repo2作为工作目录和仓库。我们既然已经有了共享仓库，就可以直接从它克隆了。
 
     git clone repo.git repo2
 
@@ -52,7 +13,6 @@ git的多用户协作，其实就是多个仓库拉取和推送修改。我们�
 我们切换到新目录，其查看内容
     cd repo2
     cat file1
-
 输出：
     line1
     line2
@@ -80,14 +40,24 @@ git的多用户协作，其实就是多个仓库拉取和推送修改。我们�
 
 输出说明，有一个名字为origin、位置在 /Users/lcjun/git/repo 的远程仓库，可以提取和推送。
 
+以及分支情况如何？
+
+     git branch
+    * master
 克隆出来的仓库，可以看到的只有一个分支。想要看到所有的分支可以加上-a参数:
 
-      git branch -a
-      * master
+     git branch -a
+    * master
       remotes/origin/HEAD -> origin/master
       remotes/origin/master
+      remotes/origin/roma
+后面的三个分支，都是以remotes开头的，它们的含义就是指向了远程分支。此时，远程分支是可用的，只要checkout
 
-都是以remotes开头的分支，含义就是指向了远程分支。
+    git checkout roma 
+同样的分支命令，不需要加入-a，就可以看到roma分支，并且它已经成为当前分支：
+    git branch
+      master
+    * roma
 
 
 ## 提交和传递修改到远程仓库
@@ -107,5 +77,3 @@ git的多用户协作，其实就是多个仓库拉取和推送修改。我们�
 
     cat file1
     发现用户B的修改已经传递给用户A了。
-
-
