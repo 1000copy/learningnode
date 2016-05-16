@@ -7,7 +7,6 @@ pandoc -o gitbook.epub  1.readme.md \
                       basic/6.hist.md \
                       basic/7.revision.md \
                       basic/8.duorepo.md \
-                      more/readme.md \
                       more/5.tag.md \
                       protocols/readme.md \
                       protocols/1.git.md \
