@@ -1,3 +1,32 @@
+
+========
+大写字母A标志为added的缩写。
+
+在查询状态是，A字母表示added。还有更多缩写：
+
+    ' ' = unmodified
+    M = modified
+    A = added
+    D = deleted
+    R = renamed
+    C = copied
+    U = updated but unmerged
+
+记忆这些字母的含义确实是一个记忆负担，但是熟练后可以大大降低眼球识别负担：只要一个字母就可以知道是什么状态。
+
+现在，我们可以知道file1已经准备好提交了。
+
+留意到一个重要的概念：stage。Git提交文件到仓库，不是直接提交，而是经由stage的。通过git-add把文件添加到stage。而git-commit提交的只能是已经处于stage状态的文件。
+
+
+### 撤销操作
+
+撤销操作可以把文件添加到暂存区这个操作撤销掉。使用 `git rm --cached <file>` 来撤销这个操作。
+
+    $ git rm --cache file1 
+
+如果你确实做了撤销，那么重新再执行一次添加到暂存区，以便继续接下来的命令。
+
 #stash
 
 ## 开始一时提交不了，但是要求临时改bug 
