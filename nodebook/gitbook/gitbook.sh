@@ -14,3 +14,4 @@ pandoc -o gitbook.epub  1.readme.md \
                       protocols/3.http.md \
                       9.paperback.md \
  --toc --toc-depth=2 
+ ./kindlegen gitbook.epub
